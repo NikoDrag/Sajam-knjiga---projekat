@@ -39,7 +39,7 @@ namespace Core.Models
         public override string ToString()
         {
             return ISBN + ", " + Naziv + ", " + Zanra + ", " + Godina_izdanja + ", " + Cena + ", "
-                + Broj_strana + ", " + Izdavac.ToString();
+                + Broj_strana + ", " + Izdavac;
         }
     }
 }
