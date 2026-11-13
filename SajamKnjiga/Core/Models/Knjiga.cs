@@ -16,21 +16,30 @@ namespace Core.Models
         public int Broj_strana {  get; set; }
         public List<Autor> Autori { get; set; }
         public Izdavac Izdavac {  get; set; }
-        public List<Posetilac> Posetilici_kupili { get; set; }
-        public List<Posetilac> Posetilac_lista_zelja { get; set; }
+        public List<Posetilac> Posetilci_kupili { get; set; }
+        public List<Posetilac> Posetilci_lista_zelja { get; set; }
 
         public Knjiga() { }
 
-        public Knjiga(string ISBN, string Naziv, string Zanra, string Godina_izdanja,
-            int Cena, int Broj_strana, List<Autor> Autori, Izdavac Izdavac, List<Posetilac> Posetilici_kupili, List<Posetilac> Posetilac_lista_zelja)
+        public Knjiga(string isbn, string naziv, string zanra, string godina_izdanja,
+            int cena, int broj_strana, List<Autor> autori, Izdavac izdavac, List<Posetilac> posetilci_kupili, List<Posetilac> posetilci_lista_zelja)
         {
-            StringBuilder sb = new StringBuilder();
-            sb.Append("ISBN: " + ISBN + ", ");
-            sb.Append("Naziv: " + Naziv + ", ");
-            sb.Append("Zanra: " + Zanra + ", ");
-            sb.Append("E-mejl:" + Email + ", ");
-            sb.Append("Broj licne karte: " + Broj_licne_karte + ", ");
-            sb.Append("Godine iskustva: " + Godine_iskustva + ", ");
+            ISBN = isbn;
+            Naziv = naziv;
+            Zanra = zanra;
+            Godina_izdanja = godina_izdanja;
+            Cena = cena;
+            Broj_strana = broj_strana;
+            Autori = autori;
+            Izdavac = izdavac;
+            Posetilci_kupili = posetilci_kupili;
+            Posetilci_lista_zelja = posetilci_lista_zelja;
+        }
+
+        public override string ToString()
+        {
+            return ISBN + " " + Naziv + " " + Zanra + " " + Godina_izdanja + " " + Cena + " "
+                + Broj_strana + " " + Izdavac.ToString();
         }
     }
 }
