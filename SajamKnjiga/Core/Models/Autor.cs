@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Core.Models
 {
-    internal class Autor
+    public class Autor
     {
         public string Ime {  get; set; }
         public string Prezime { get; set; }
