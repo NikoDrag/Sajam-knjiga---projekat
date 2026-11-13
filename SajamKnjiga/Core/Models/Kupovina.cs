@@ -36,7 +36,7 @@ namespace Core.Models
 
         public override string ToString()
         {
-            return Posetilac + ", " + Knjiga + ", " + Datum_kupovine.ToString("dd.MM.yyyy.") + ", " +
+            return Posetilac + ", " + Knjiga + ", " + Datum_kupovine + ", " +
                    Ocena + ", " + Komentar;
         }
     }
