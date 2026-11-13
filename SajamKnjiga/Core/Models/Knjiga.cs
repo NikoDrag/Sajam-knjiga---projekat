@@ -8,7 +8,7 @@ namespace Core.Models
 {
     public class Knjiga
     {
-        public string ISBN { get; set; } //међународни стандардни број књиге
+        public string ISBN { get; set; } //medjunarodni kod
         public string Naziv {  get; set; }
         public string Zanra { get; set; }
         public string Godina_izdanja { get; set; }
@@ -38,8 +38,8 @@ namespace Core.Models
 
         public override string ToString()
         {
-            return ISBN + " " + Naziv + " " + Zanra + " " + Godina_izdanja + " " + Cena + " "
-                + Broj_strana + " " + Izdavac.ToString();
+            return ISBN + " " + Naziv + ", " + Zanra + ", " + Godina_izdanja + ", " + Cena + ", "
+                + Broj_strana + ", " + Izdavac.ToString();
         }
     }
 }
