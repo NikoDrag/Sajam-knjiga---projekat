@@ -36,7 +36,7 @@ namespace Core.Models
 
         public override string ToString()
         {
-            return Ime + " " + Prezime + ", " + Datum_rodjenja + ", " + Adresa + ", " +
+            return Ime + ", " + Prezime + ", " + Datum_rodjenja + ", " + Adresa + ", " +
                    Telefon + ", " + Email + ", " + Broj_licne_karte + ", " + Godine_iskustva;
         }
     }
