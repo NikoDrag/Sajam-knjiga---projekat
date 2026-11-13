@@ -29,8 +29,42 @@ namespace Core.Models
         {get; set; }
         public double Prosecna_ocena_recenzija
         { get; set; }
-        public List<Kupovina> SpisakKupljenihKnjiga { get; set; }
-        public List<Knjiga> ListaZelja { get; set; }
+        public List<Kupovina> Spisak_kupljenih_knjiga 
+        { get; set; }
+        public List<Knjiga> Lista_zelja
+        { get; set; }
+
+        public Posetilac()
+        {
+            Spisak_kupljenih_knjiga = new List<Kupovina>();
+            Lista_zelja = new List<Knjiga>();
+        }
+
+        public Posetilac(string ime, string prezime, string datum_rodjenja, Adresa adresa,
+                  string kontakt_telefon, string email, string broj_clanske_karte,
+                  int trenutna_godina_clanstva, Status_posetioca status_posetioca,
+                  double prosecna_ocena_recenzija)
+        {
+            Ime = ime;
+            Prezime = prezime;
+            Datum_rodjenja = datum_rodjenja;
+            Adresa = adresa;
+            Kontakt_telefon = kontakt_telefon;
+            Email = email;
+            Broj_clanske_karte = broj_clanske_karte;
+            Trenutna_godina_clanstva = trenutna_godina_clanstva;
+            Status_Posetioca = status_posetioca;
+            Prosecna_ocena_recenzija = prosecna_ocena_recenzija;
+            Spisak_kupljenih_knjiga = new List<Kupovina>();
+            Lista_zelja = new List<Knjiga>();
+        }
+
+        public override string ToString()
+        {
+            return Ime + " " + Prezime + ", " + Datum_rodjenja + ", " + Adresa + ", " +
+                   Kontakt_telefon + ", " + Email + ", " + Broj_clanske_karte + ", " +
+                   Trenutna_godina_clanstva + ", " + Status_Posetioca + ", " + Prosecna_ocena_recenzija;
+        }
 
 
     }
