@@ -41,9 +41,12 @@ namespace Core.Models
             StringBuilder sb = new StringBuilder();
             sb.Append("Ime i prezime: " + Ime + " " + Prezime + ", ");
             sb.Append("Datum rodjenja: " + Datum_rodjenja + ", ");
-            //sb.Append();
+            sb.Append("Adresa: " + Adresa.ToString() + ", ");
+            sb.Append("E-mejl:" + Email + ", ");
+            sb.Append("Broj licne karte: " + Broj_licne_karte + ", ");
+            sb.Append("Godine iskustva: " + Godine_iskustva + ", ");
 
-            return base.ToString();
+            return sb.ToString();
         }
     }
 }
