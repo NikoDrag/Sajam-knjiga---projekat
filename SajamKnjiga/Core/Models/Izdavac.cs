@@ -8,5 +8,46 @@ namespace Core.Models
 {
     public class Izdavac
     {
+        private Autor _sef_izdavaca;
+        //odma proveravamo da li je manji od 5 god i izbacujemo exception
+        public string Sifra { get; set; }
+        public string Naziv { get; set; }
+
+        public Autor Sef_izdavaca
+        {
+            //provera
+        get { return _sef_izdavaca; }
+            set
+            {
+                if (value != null && value.Godine_iskustva < 5)
+                {
+                    throw new ArgumentException("Šef izdavača mora imati najmanje 5 godina iskustva.");
+                }
+                _sef_izdavaca = value;
+            }
+        }
+
+        public List<Autor> Spisak_autora { get; set; }
+        public List<Knjiga> Spisak_knjiga { get; set; }
+
+        public Izdavac()
+        {
+            Spisak_autora = new List<Autor>();
+            Spisak_knjiga = new List<Knjiga>();
+        }
+
+        public Izdavac(string sifra, string naziv, Autor sef_izdavaca)
+        {
+            Sifra = sifra;
+            Naziv = naziv;
+            Sef_izdavaca = sef_izdavaca;
+            Spisak_autora = new List<Autor>();
+            Spisak_knjiga = new List<Knjiga>();
+        }
+
+        public override string ToString()
+        {
+            return Sifra + ", " + Naziv + ", " + Sef_izdavaca;
+        }
     }
 }

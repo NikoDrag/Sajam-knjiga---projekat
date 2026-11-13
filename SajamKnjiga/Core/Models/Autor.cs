@@ -16,8 +16,6 @@ namespace Core.Models
         public string Email { get; set; }
         public string Broj_licne_karte { get; set; }
         public int Godine_iskustva {  get; set; }
-
-
         public List<Knjiga> Knjige { get; set; }
 
 
@@ -38,15 +36,8 @@ namespace Core.Models
 
         public override string ToString()
         {
-            StringBuilder sb = new StringBuilder();
-            sb.Append("Ime i prezime: " + Ime + " " + Prezime + ", ");
-            sb.Append("Datum rodjenja: " + Datum_rodjenja + ", ");
-            sb.Append("Adresa: " + Adresa.ToString() + ", ");
-            sb.Append("E-mejl:" + Email + ", ");
-            sb.Append("Broj licne karte: " + Broj_licne_karte + ", ");
-            sb.Append("Godine iskustva: " + Godine_iskustva + ", ");
-
-            return sb.ToString();
+            return Ime + " " + Prezime + ", " + Datum_rodjenja + ", " + Adresa + ", " +
+                   Telefon + ", " + Email + ", " + Broj_licne_karte + ", " + Godine_iskustva;
         }
     }
 }
