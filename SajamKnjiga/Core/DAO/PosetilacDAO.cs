@@ -13,7 +13,7 @@ namespace Core.DAO
         private readonly string Putanja = "Podaci" + Path.DirectorySeparatorChar + "posetioci.txt";
         private List<Posetilac> Posetioci;
 
-        public Posetilac_dao()
+        public PosetilacDAO()
         {
             Posetioci = new List<Posetilac>();
             Ucitaj_iz_fajla();
@@ -122,7 +122,7 @@ namespace Core.DAO
                 p.Prezime + "|" + p.Datum_rodjenja + "|" + ulica + "|" + broj + "|" +
                 grad + "|" + drzava + "|" + p.Kontakt_telefon + "|" +
                 p.Email + "|" + p.Trenutna_godina_clanstva + "|" +
-                p.Status_Posetioca + "|" + p.Prosecna_ocena_recenzija;
+                p.Status_Posetioca + "|" + p.Prosecna_ocena_recenzija + "|" + zelje_tekst;
 
                 linije.Add(linija);
             }

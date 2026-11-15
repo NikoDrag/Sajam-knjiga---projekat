@@ -22,7 +22,7 @@ namespace Core.Models
 
         public Kupovina()
         {
-
+       
         }
         public Kupovina(Posetilac posetilac, Knjiga knjiga, string datum_kupovine,
             float ocena,string komentar)

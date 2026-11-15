@@ -4,11 +4,12 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using System.IO
+using System.IO;
+
 
 namespace Core.DAO
 {
-    internal class KupovinaDAO
+    public class KupovinaDAO
     {
         private readonly string Putanja = "Podaci" + Path.DirectorySeparatorChar
         + "kupovine.txt";
@@ -20,94 +21,78 @@ namespace Core.DAO
             Ucitaj_iz_fajla();
         }
 
-        public void Ucitaj_iz_fajla(List<Posetilac> svi_posetioci = null, List<Knjiga> sve_knjige = null)
+        public void Ucitaj_iz_fajla()
         {
             Kupovine.Clear();
 
             if (!File.Exists(Putanja))
-            {
                 return;
-            }
 
             string[] linije = File.ReadAllLines(Putanja);
             foreach (string linija in linije)
             {
-                if (string.IsNullOrWhiteSpace(linija)) continue;
+                if (string.IsNullOrWhiteSpace(linija))
+                    continue;
 
                 string[] delovi = linija.Split('|');
-                // Redosled u fajlu:
-                // 0:Broj_clanske_karte | 1:ISBN_knjige | 2:Datum_kupovine | 3:Ocena | 4:Komentar
 
-                string clanska_karta = delovi[0];
-                string isbn_knjige = delovi[1];
-                string datum = delovi[2];
-                int ocena = int.Parse(delovi[3]);
-                string komentar = delovi[4];
+                Posetilac posetilac = new Posetilac { Broj_clanske_karte = delovi[0] };
+                Knjiga knjiga = new Knjiga { ISBN = delovi[1] };
 
-                Posetilac posetilac = Pronadji_posetioca_u_listi(clanska_karta, svi_posetioci);
-                Knjiga knjiga = Pronadji_knjigu_u_listi(isbn_knjige, sve_knjige);
-
-                Kupovina kupovina = new Kupovina(posetilac, knjiga, datum, ocena, komentar);
-                Kupovine.Add(kupovina);
+                Kupovina K = new Kupovina(
+                    posetilac,
+                    knjiga,
+                    delovi[2],
+                    int.Parse(delovi[3]),
+                    delovi[4]
+                );
+                Kupovine.Add(K);
             }
+                
         }
+        
 
-        public void Sacuvaj_u_fajl()
-        {
+       public void Sacuvaj_u_fajl()
+       {
             string folder = Path.GetDirectoryName(Putanja);
             if (!string.IsNullOrEmpty(folder) && !Directory.Exists(folder))
             {
-                Directory.CreateDirectory(folder);
+                Directory.CreateDirectory(folder); 
             }
 
             List<string> linije = new List<string>();
             foreach (Kupovina k in Kupovine)
             {
-                string clanska_karta = k.Posetilac != null ? k.Posetilac.Broj_clanske_karte : "";
-                string isbn_knjige = k.Knjiga != null ? k.Knjiga.ISBN : "";
+                string clanska_karta = "";
+                if (k.Posetilac != null)
+                {
+                    clanska_karta = k.Posetilac.Broj_clanske_karte;
+                }
 
-                string linija = clanska_karta + "|" +
-                                isbn_knjige + "|" +
-                                k.Datum_kupovine + "|" +
-                                k.Ocena + "|" +
-                                k.Komentar;
+                string isbn_knjige = "";
+                if (k.Knjiga != null)
+                {
+                    isbn_knjige = k.Knjiga.ISBN;
+                }
+
+                string linija = clanska_karta + "|" + isbn_knjige + "|" +
+                k.Datum_kupovine + "|" + k.Ocena + "|" + k.Komentar;
 
                 linije.Add(linija);
             }
 
             File.WriteAllLines(Putanja, linije);
-        }
+       }
 
-        public void Dodaj_kupovinu(Kupovina kupovina)
+        public void Dodavanje_kupovine(Kupovina kupovina)
         {
             Kupovine.Add(kupovina);
             Sacuvaj_u_fajl();
         }
 
-        public void Izmeni_kupovinu(Kupovina izmenjena)
+        public List<Kupovina> Prikaz_kupovina()
         {
-            Kupovina postojeca = Pronadji_kupovinu(
-                izmenjena.Posetilac.Broj_clanske_karte,
-                izmenjena.Knjiga.ISBN,
-                izmenjena.Datum_kupovine
-            );
-
-            if (postojeca != null)
-            {
-                postojeca.Ocena = izmenjena.Ocena;
-                postojeca.Komentar = izmenjena.Komentar;
-                Sacuvaj_u_fajl();
-            }
-        }
-
-        public void Obrisi_kupovinu(string clanska_karta, string isbn_knjige, string datum)
-        {
-            Kupovina postojeca = Pronadji_kupovinu(clanska_karta, isbn_knjige, datum);
-            if (postojeca != null)
-            {
-                Kupovine.Remove(postojeca);
-                Sacuvaj_u_fajl();
-            }
+            return Kupovine;
         }
 
         public Kupovina Pronadji_kupovinu(string clanska_karta, string isbn_knjige, string datum)
@@ -125,34 +110,27 @@ namespace Core.DAO
             return null;
         }
 
-        public List<Kupovina> Vrati_sve_kupovine()
+
+        public void Ponistavanje_kupovine(string clanska_karta, string isbn_knjige, string datum)
         {
-            return Kupovine;
+            //ova funkcija se koristi za brisanje instance kupovina
+            Kupovina postojeca = Pronadji_kupovinu(clanska_karta, isbn_knjige, datum);
+            if (postojeca != null)
+            {
+                Kupovine.Remove(postojeca);
+                Sacuvaj_u_fajl();
+            }
         }
 
-        // Pomoćne metode za povezivanje po šifri pri učitavanju iz fajla
-        private Posetilac Pronadji_posetioca_u_listi(string clanska_karta, List<Posetilac> lista)
+        public void Izmena_kupovine(Kupovina izmenjena)
         {
-            if (lista != null)
+            Kupovina postojeca = Pronadji_kupovinu(izmenjena.Posetilac.Broj_clanske_karte, izmenjena.Knjiga.ISBN, izmenjena.Datum_kupovine);
+            if (postojeca != null)
             {
-                foreach (Posetilac p in lista)
-                {
-                    if (p.Broj_clanske_karte == clanska_karta) return p;
-                }
+                postojeca.Ocena = izmenjena.Ocena;
+                postojeca.Komentar = izmenjena.Komentar;
+                Sacuvaj_u_fajl();
             }
-            return new Posetilac { Broj_clanske_karte = clanska_karta };
-        }
-
-        private Knjiga Pronadji_knjigu_u_listi(string isbn, List<Knjiga> lista)
-        {
-            if (lista != null)
-            {
-                foreach (Knjiga k in lista)
-                {
-                    if (k.ISBN == isbn) return k;
-                }
-            }
-            return new Knjiga { ISBN = isbn };
         }
     }
 }
