@@ -46,10 +46,10 @@ namespace Core.DAO
                     new List<Knjiga>()
                 );
 
-                // Ucitavanje knjiga autora (delovi[8] razdvojeno sa ';')
+                
                 if (delovi.Length > 8 && !string.IsNullOrEmpty(delovi[8]))
                 {
-                    string[] isbn_niz = delovi[8].Split(';');
+                    string[] isbn_niz = delovi[8].Split(';');//radi konzistentnosti sa ; razdvajamo
                     foreach (string isbn in isbn_niz)
                     {
                         Knjiga knjiga = new Knjiga { ISBN = isbn };
@@ -83,15 +83,9 @@ namespace Core.DAO
                     knjige_tekst = string.Join(";", isbn_lista);
                 }
 
-                string linija = a.Broj_licne_karte + "|" +
-                                a.Ime + "|" +
-                                a.Prezime + "|" +
-                                a.Datum_rodjenja + "|" +
-                                a.Adresa + "|" +
-                                a.Telefon + "|" +
-                                a.Email + "|" +
-                                a.Godine_iskustva + "|" +
-                                knjige_tekst;
+                string linija = a.Broj_licne_karte + "|" + a.Ime + "|" + a.Prezime + "|" +
+                a.Datum_rodjenja + "|" + a.Adresa + "|" + a.Telefon + "|" +
+                a.Email + "|" + a.Godine_iskustva + "|" + knjige_tekst;
 
                 linije.Add(linija);
             }
@@ -101,7 +95,7 @@ namespace Core.DAO
 
         public void Dodavanje_autora(Autor autor)
         {
-            if (autor.Knjige == null)
+            if (autor.Knjige == null) //zato sto mozda nista nije napisao 
             {
                 autor.Knjige = new List<Knjiga>();
             }
@@ -152,7 +146,6 @@ namespace Core.DAO
             return Autori;
         }
 
-        // #knjige_autora
         public List<Knjiga> Knjige_autora(string broj_licne_karte)
         {
             Autor a = Pronadji_autora(broj_licne_karte);
@@ -162,14 +155,13 @@ namespace Core.DAO
             }
             return new List<Knjiga>();
         }
-
-        // #dodavanje_knjige_autoru
+   
         public void Dodavanje_knjige_autoru(string broj_licne_karte, Knjiga knjiga)
         {
             Autor a = Pronadji_autora(broj_licne_karte);
             if (a != null && knjiga != null)
             {
-                if (a.Knjige == null)
+                if (a.Knjige == null)//ako nema nist opet pravimo novu praznu listu
                 {
                     a.Knjige = new List<Knjiga>();
                 }
@@ -179,7 +171,6 @@ namespace Core.DAO
             }
         }
 
-        // #uklanjanje_knjige_sa_autora
         public void Uklanjanje_knjige_sa_autora(string broj_licne_karte, string isbn)
         {
             Autor a = Pronadji_autora(broj_licne_karte);
