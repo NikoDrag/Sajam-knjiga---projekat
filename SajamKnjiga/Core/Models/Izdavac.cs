@@ -14,19 +14,7 @@ namespace Core.Models
         public string Naziv { get; set; }
 
         public Autor Sef_izdavaca
-        {
-            //provera
-        get { return _sef_izdavaca; }
-            set
-            {
-                if (value != null && value.Godine_iskustva < 5)
-                {
-                    throw new ArgumentException("Šef izdavača mora imati najmanje 5 godina iskustva.");
-                }
-                _sef_izdavaca = value;
-            }
-        }
-
+        { get; set; }
         public List<Autor> Spisak_autora { get; set; }
         public List<Knjiga> Spisak_knjiga { get; set; }
 
