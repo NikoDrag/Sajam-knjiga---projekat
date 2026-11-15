@@ -27,7 +27,7 @@ namespace Core.DAO
                 return;
 
             string[] linije = File.ReadAllLines(Putanja);
-            foreach (string linija in linija)
+            foreach (string linija in linije)
 	        {
                 if(string.IsNullOrWhiteSpace(linija))
                     continue;
@@ -75,8 +75,8 @@ namespace Core.DAO
                             pronadjena = new Knjiga { ISBN = isbn };
                         }
                         //rezerva ako ne nadje
-                        p.Lista_zelja.Add(pronadjena);
-                        pronadjena.Posetilci_lista_zelja.Add(p);
+                        P.Lista_zelja.Add(pronadjena);
+                        pronadjena.Posetilci_lista_zelja.Add(P);
                     }
                 }
                 Posetioci.Add(P);
