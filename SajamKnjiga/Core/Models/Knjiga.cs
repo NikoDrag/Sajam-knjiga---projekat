@@ -19,7 +19,11 @@ namespace Core.Models
         public List<Posetilac> Posetilci_kupili { get; set; }
         public List<Posetilac> Posetilci_lista_zelja { get; set; }
 
-        public Knjiga() { }
+        public Knjiga() { 
+            Autori = new List<Autor>();
+            Posetilci_kupili = new List<Posetilac>();
+            Posetilci_lista_zelja = new List<Posetilac>();
+        }
 
         public Knjiga(string isbn, string naziv, string zanra, string godina_izdanja,
             int cena, int broj_strana, List<Autor> autori, Izdavac izdavac, List<Posetilac> posetilci_kupili, List<Posetilac> posetilci_lista_zelja)
