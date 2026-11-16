@@ -9,7 +9,6 @@ namespace Core.Models
     public class Izdavac
     {
         private Autor _sef_izdavaca;
-        //odma proveravamo da li je manji od 5 god i izbacujemo exception
         public string Sifra { get; set; }
         public string Naziv { get; set; }
 
