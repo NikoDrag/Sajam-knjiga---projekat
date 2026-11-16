@@ -34,11 +34,27 @@ namespace Core.DAO
 
                 string[] delovi = linija.Split('|');
 
+                string[] adresaDelovi = delovi[4].Split(',');
+                Adresa adresa;
+                if (adresaDelovi.Length == 4)
+                {
+                    adresa = new Adresa(
+                        adresaDelovi[0].Trim(),
+                        adresaDelovi[1].Trim(),
+                        adresaDelovi[2].Trim(),
+                        adresaDelovi[3].Trim()
+                    );
+                }
+                else
+                {
+                    adresa = new Adresa(delovi[4], "", "", "");
+                }
+
                 Autor A = new Autor(
                     delovi[1],
                     delovi[2],
                     delovi[3],
-                    delovi[4],
+                    adresa,
                     delovi[5],
                     delovi[6],
                     delovi[0],
@@ -46,10 +62,9 @@ namespace Core.DAO
                     new List<Knjiga>()
                 );
 
-                
                 if (delovi.Length > 8 && !string.IsNullOrEmpty(delovi[8]))
                 {
-                    string[] isbn_niz = delovi[8].Split(';');//radi konzistentnosti sa ; razdvajamo
+                    string[] isbn_niz = delovi[8].Split(';'); // radi konzistentnosti sa ; razdvajamo
                     foreach (string isbn in isbn_niz)
                     {
                         Knjiga knjiga = new Knjiga { ISBN = isbn };
@@ -83,9 +98,13 @@ namespace Core.DAO
                     knjige_tekst = string.Join(";", isbn_lista);
                 }
 
+                string adresa_tekst = a.Adresa != null
+                    ? a.Adresa.Ulica + "," + a.Adresa.Broj + "," + a.Adresa.Grad + "," + a.Adresa.Drzava
+                    : ",,,";
+
                 string linija = a.Broj_licne_karte + "|" + a.Ime + "|" + a.Prezime + "|" +
-                a.Datum_rodjenja + "|" + a.Adresa + "|" + a.Telefon + "|" +
-                a.Email + "|" + a.Godine_iskustva + "|" + knjige_tekst;
+                                a.Datum_rodjenja + "|" + adresa_tekst + "|" + a.Telefon + "|" +
+                                a.Email + "|" + a.Godine_iskustva + "|" + knjige_tekst;
 
                 linije.Add(linija);
             }
@@ -95,7 +114,7 @@ namespace Core.DAO
 
         public void Dodavanje_autora(Autor autor)
         {
-            if (autor.Knjige == null) //zato sto mozda nista nije napisao 
+            if (autor.Knjige == null) // zato sto mozda nista nije napisao
             {
                 autor.Knjige = new List<Knjiga>();
             }
@@ -155,13 +174,13 @@ namespace Core.DAO
             }
             return new List<Knjiga>();
         }
-   
+
         public void Dodavanje_knjige_autoru(string broj_licne_karte, Knjiga knjiga)
         {
             Autor a = Pronadji_autora(broj_licne_karte);
             if (a != null && knjiga != null)
             {
-                if (a.Knjige == null)//ako nema nist opet pravimo novu praznu listu
+                if (a.Knjige == null) // ako nema nista opet pravimo novu praznu listu
                 {
                     a.Knjige = new List<Knjiga>();
                 }

@@ -8,20 +8,19 @@ namespace Core.Models
 {
     public class Autor
     {
-        public string Ime {  get; set; }
+        public string Ime { get; set; }
         public string Prezime { get; set; }
         public string Datum_rodjenja { get; set; }
-        public string Adresa {  get; set; }
-        public string Telefon {  get; set; }
+        public Adresa Adresa { get; set; }
+        public string Telefon { get; set; }
         public string Email { get; set; }
         public string Broj_licne_karte { get; set; }
-        public int Godine_iskustva {  get; set; }
+        public int Godine_iskustva { get; set; }
         public List<Knjiga> Knjige { get; set; }
-
 
         public Autor() { }
 
-        public Autor(string ime, string prezime, string datum_rodjenja, string adresa, string telefon, string email, string broj_licne_karte, int godine_iskustva, List<Knjiga> knjige)
+        public Autor(string ime, string prezime, string datum_rodjenja, Adresa adresa, string telefon, string email, string broj_licne_karte, int godine_iskustva, List<Knjiga> knjige)
         {
             Ime = ime;
             Prezime = prezime;
