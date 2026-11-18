@@ -165,12 +165,11 @@ namespace ConsoleClient.Controllers
             }
             Console.WriteLine("Unesite ulicu: ");
             stara.Ulica = CitajIzmenu(stara.Ulica);
-
-            Console.WriteLine("Unesite ulicu: ");
+            Console.WriteLine("Unesite broj ulice: ");
             stara.Broj = CitajIzmenu(stara.Broj);
-            Console.WriteLine("Unesite ulicu: ");
-            stara.Grad = CitajIzmenu(stara.Broj);
-            Console.WriteLine("Unesite ulicu: ");
+            Console.WriteLine("Unesite grad: ");
+            stara.Grad = CitajIzmenu(stara.Grad);
+            Console.WriteLine("Unesite drzavu: ");
             stara.Drzava = CitajIzmenu(stara.Drzava);
 
             return stara;
@@ -350,25 +349,30 @@ namespace ConsoleClient.Controllers
             }
 
             Console.WriteLine("Nova sifra izdavaca (Enter ostavlja staru vrednost)");
-            string sifra = CitajIzmenu(postojeci.Izdavac != null ? postojeci.Izdavac.Sifra : "");
-            Izdavac izdavac = sajamService.IzdavacDAO.Pronadji_izdavaca(sifra);
-            if (izdavac == null) 
-            { 
-                Console.WriteLine("Izdavac ne postoji."); 
-                return; 
-            }
+            string sifra = Console.ReadLine();
+            if (!string.IsNullOrWhiteSpace(sifra))
+            {
+                Izdavac izdavac = sajamService.IzdavacDAO.Pronadji_izdavaca(sifra.Trim());
+                if (izdavac == null)
+                {
+                    Console.WriteLine("Izdavac ne postoji.");
+                    return;
+                }
 
-            if (postojeci.Izdavac != null && postojeci.Izdavac != izdavac)
-            {
-                postojeci.Izdavac.Spisak_knjiga.Remove(postojeci);
+                if (postojeci.Izdavac != null && postojeci.Izdavac != izdavac)
+                {
+                    postojeci.Izdavac.Spisak_knjiga.Remove(postojeci);
+                }
+
+                if (!izdavac.Spisak_knjiga.Contains(postojeci))
+                {
+                    izdavac.Spisak_knjiga.Add(postojeci);
+                }
+
+                postojeci.Izdavac = izdavac;
             }
-                
-            if (!izdavac.Spisak_knjiga.Contains(postojeci))
-            {
-                izdavac.Spisak_knjiga.Add(postojeci);
-            }
-               
-            postojeci.Izdavac = izdavac;
+            
+            
 
             Console.Write("Novi naziv: ");
             postojeci.Naziv = CitajIzmenu(postojeci.Naziv);
@@ -572,6 +576,7 @@ namespace ConsoleClient.Controllers
             postojeci.Naziv = CitajIzmenu(postojeci.Naziv);
             sajamService.IzdavacDAO.Izmena_izdavaca(postojeci);
 
+            Console.Write("Broj licne karte novog sefa (Enter ostavlja starog): ");
             string lk = CitajIzmenu(postojeci.Sef_izdavaca != null ? postojeci.Sef_izdavaca.Broj_licne_karte : "");
             if (lk != "" && (postojeci.Sef_izdavaca == null || postojeci.Sef_izdavaca.Broj_licne_karte != lk))
             {
