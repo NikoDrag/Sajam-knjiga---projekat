@@ -100,6 +100,19 @@ namespace ConsoleClient.Controllers
             }
         }
 
+        // Provera da li je unos validan broj
+        private int CitajBroj(int min = int.MinValue, int max = int.MaxValue)
+        {
+            while (true)
+            {
+                if(int.TryParse(Console.ReadLine(), out int rezultat) && rezultat >= min && rezultat <= max)
+                {
+                    return rezultat;
+                }
+                Console.WriteLine("Unos nije ispravan, pokusaj opet");
+            }
+        }
+        
         private Adresa UnesiAdresu()
         {
             Console.Write("Ulica: ");
@@ -126,6 +139,13 @@ namespace ConsoleClient.Controllers
         {
             Console.Write("Broj clanske karte: ");
             string karta = Console.ReadLine();
+
+            if(sajamService.PosetilacDAO.Pronadji_posetioca(karta) != null)
+            {
+                Console.WriteLine("Posetilac sa tom kartom vec postoji");
+                return;
+            }
+
             Console.Write("Ime: ");
             string ime = Console.ReadLine();
             Console.Write("Prezime: ");
@@ -138,7 +158,7 @@ namespace ConsoleClient.Controllers
             Console.Write("Email: ");
             string email = Console.ReadLine();
             Console.Write("Trenutna godina clanstva: ");
-            int godina = int.Parse(Console.ReadLine());
+            int godina = CitajBroj(1);//int.Parse(Console.ReadLine());
             Console.Write("Status (R - redovan / V - VIP): ");
             Status_posetioca status = Console.ReadLine().ToUpper() == "V" ? Status_posetioca.VIP : Status_posetioca.Redovan;
 
@@ -193,6 +213,13 @@ namespace ConsoleClient.Controllers
         {
             Console.Write("ISBN: ");
             string isbn = Console.ReadLine();
+
+            if (sajamService.KnjigaDAO.Pronadji_knjigu(isbn) != null)
+            {
+                Console.WriteLine("Knjiga sa tim ISBN vec postoji.");
+                return;
+            }
+
             Console.Write("Naziv: ");
             string naziv = Console.ReadLine();
             Console.Write("Zanr: ");
@@ -200,13 +227,20 @@ namespace ConsoleClient.Controllers
             Console.Write("Godina izdanja: ");
             string godina = Console.ReadLine();
             Console.Write("Cena: ");
-            int cena = int.Parse(Console.ReadLine());
+            int cena = CitajBroj(0);
             Console.Write("Broj strana: ");
-            int strana = int.Parse(Console.ReadLine());
+            int strana = CitajBroj(1);
             Console.Write("Sifra izdavaca: ");
             string sifraIzdavaca = Console.ReadLine();
 
             Izdavac izdavac = sajamService.IzdavacDAO.Pronadji_izdavaca(sifraIzdavaca);
+
+            if (izdavac == null)
+            {
+                Console.WriteLine("Izdavac ne postoji. Prvo dodaj izdavaca.");
+                return;
+            }
+
             Knjiga nova = new Knjiga(
                 isbn,
                 naziv,
@@ -251,22 +285,14 @@ namespace ConsoleClient.Controllers
             Console.Write("Datum kupovine (npr. 16.11.2026): ");
             string datum = Console.ReadLine();
             Console.Write("Ocena (1-5): ");
-            int ocena = int.Parse(Console.ReadLine());
+            int ocena = CitajBroj(1, 5); //int.Parse(Console.ReadLine());
             Console.Write("Komentar: ");
             string komentar = Console.ReadLine();
 
-            Posetilac p = sajamService.PosetilacDAO.Pronadji_posetioca(karta);
-            Knjiga k = sajamService.KnjigaDAO.Pronadji_knjigu(isbn);
-            if (p != null && k != null)
-            {
-                Kupovina nova = new Kupovina(p, k, datum, ocena, komentar);
-                sajamService.KupovinaDAO.Dodavanje_kupovine(nova);
-                Console.WriteLine("Kupovina zabelezena!");
-            }
-            else
-            {
-                Console.WriteLine("Posetilac ili knjiga ne postoje.");
-            }
+
+            Kupovina nova = sajamService.Kupi_knjigu(karta, isbn, datum, ocena, komentar);
+
+            Console.WriteLine(nova != null ? "Uspesna kupovina." : "Posetilac ili knjiga ne postoje.");
         }
 
         private void PrikaziAutore()
@@ -281,6 +307,13 @@ namespace ConsoleClient.Controllers
         {
             Console.Write("Broj licne karte: ");
             string lk = Console.ReadLine();
+
+            if (sajamService.AutorDAO.Pronadji_autora(lk) != null)
+            {
+                Console.WriteLine("Autpr sa tom kartom vec postoji");
+                return;
+            }
+
             Console.Write("Ime: ");
             string ime = Console.ReadLine();
             Console.Write("Prezime: ");
@@ -293,7 +326,7 @@ namespace ConsoleClient.Controllers
             Console.Write("Email: ");
             string email = Console.ReadLine();
             Console.Write("Godine iskustva: ");
-            int god = int.Parse(Console.ReadLine());
+            int god = CitajBroj(0); //int.Parse(Console.ReadLine());
 
             Autor novi = new Autor(ime, prezime, datum, adresa, tel, email, lk, god, new List<Knjiga>());
             sajamService.AutorDAO.Dodavanje_autora(novi);
@@ -331,6 +364,13 @@ namespace ConsoleClient.Controllers
         {
             Console.Write("Sifra izdavaca: ");
             string sifra = Console.ReadLine();
+
+            if (sajamService.IzdavacDAO.Pronadji_izdavaca(sifra) != null)
+            {
+                Console.WriteLine("Izdavac sa tom sifrom vec postoji");
+                return;
+            }
+
             Console.Write("Naziv: ");
             string naziv = Console.ReadLine();
 

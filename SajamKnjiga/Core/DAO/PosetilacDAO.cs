@@ -203,7 +203,7 @@ namespace Core.DAO
         public void Dodavanje_knjige_na_listu_zelja(string broj_clanske_karte, Knjiga knjiga)
         {
             Posetilac p = Pronadji_posetioca(broj_clanske_karte);
-            if (p != null && knjiga != null)
+            if (p != null && knjiga != null && !p.Lista_zelja.Contains(knjiga))
             {
                 p.Lista_zelja.Add(knjiga);
                 knjiga.Posetilci_lista_zelja.Add(p);

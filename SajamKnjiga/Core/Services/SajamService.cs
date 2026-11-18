@@ -103,7 +103,50 @@ namespace Core.Services
                 }
                 p.Lista_zelja = prava_lista_zelja;
             }
+
+            foreach (Kupovina kup in KupovinaDAO.Prikaz_kupovina())
+            {
+                Posetilac p = PosetilacDAO.Pronadji_posetioca(kup.Posetilac.Broj_clanske_karte);
+                Knjiga k = KnjigaDAO.Pronadji_knjigu(kup.Knjiga.ISBN);
+                
+                if (p != null && k != null)
+                {
+                    kup.Posetilac = p;
+                    kup.Knjiga = k;
+                    p.Spisak_kupljenih_knjiga.Add(kup);
+
+                    if (!k.Posetilci_kupili.Contains(p))
+                    {
+                        k.Posetilci_kupili.Add(p);
+                    }
+                }
+            }
         }
+
+        public Kupovina Kupi_knjigu(string broj_clanske_karte, string isbn, string datum, int ocena, string komentar)
+        {
+            Posetilac p = PosetilacDAO.Pronadji_posetioca(broj_clanske_karte);
+            Knjiga k = KnjigaDAO.Pronadji_knjigu(isbn);
+            if (p == null || k == null)
+            {
+                return null;
+            }
+
+            if (KupovinaDAO.Pronadji_kupovinu(broj_clanske_karte, isbn, datum) != null)
+            {
+                return null;
+            }
+
+            Kupovina nova = new Kupovina(p, k, datum, ocena, komentar);
+            KupovinaDAO.Dodavanje_kupovine(nova);
+            p.Spisak_kupljenih_knjiga.Add(nova);
+            k.Posetilci_kupili.Add(p);
+
+            p.Prosecna_ocena_recenzija = p.Spisak_kupljenih_knjiga.Average(x => x.Ocena);
+            PosetilacDAO.Sacuvaj_u_fajl();
+            return nova;
+        }
+
 
         //#autor_posetioci
         public List<Posetilac> Posetioci_za_autora(string broj_licne_karte_autora)
@@ -181,5 +224,7 @@ namespace Core.Services
 
             return rezultat;
         }
+
+
     }
 }
