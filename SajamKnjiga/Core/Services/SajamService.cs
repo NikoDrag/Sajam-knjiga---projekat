@@ -147,6 +147,26 @@ namespace Core.Services
             return nova;
         }
 
+        public bool Izmeni_kupovinu(string karta, string isbn, string datum, int ocena, string komentar)
+        {
+            Kupovina kup = KupovinaDAO.Pronadji_kupovinu(karta, isbn, datum);
+            if (kup == null)
+            {
+                return false;
+            }
+
+            kup.Ocena = ocena;
+            kup.Komentar = komentar;
+            KupovinaDAO.Izmena_kupovine(kup);
+
+            Posetilac p = kup.Posetilac;
+            if (p != null && p.Spisak_kupljenih_knjiga.Count > 0)
+            {
+                p.Prosecna_ocena_recenzija = p.Spisak_kupljenih_knjiga.Average(x => x.Ocena);
+                PosetilacDAO.Sacuvaj_u_fajl();
+            }
+            return true;
+        }
 
         //#autor_posetioci
         public List<Posetilac> Posetioci_za_autora(string broj_licne_karte_autora)

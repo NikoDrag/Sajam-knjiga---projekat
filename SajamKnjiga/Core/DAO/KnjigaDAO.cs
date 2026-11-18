@@ -110,6 +110,17 @@ namespace Core.DAO
                 postojeca.Godina_izdanja = izmenjena.Godina_izdanja;
                 postojeca.Cena = izmenjena.Cena;
                 postojeca.Broj_strana = izmenjena.Broj_strana;
+                
+                if (postojeca.Izdavac != null && postojeca.Izdavac != izmenjena.Izdavac)
+                {
+                    postojeca.Izdavac.Spisak_knjiga.Remove(postojeca);
+                }
+                    
+                if (izmenjena.Izdavac != null && !izmenjena.Izdavac.Spisak_knjiga.Contains(postojeca))
+                {
+                    izmenjena.Izdavac.Spisak_knjiga.Add(postojeca);
+                }
+              
                 postojeca.Izdavac = izmenjena.Izdavac;
                 Sacuvaj_u_fajl();
             }

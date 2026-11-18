@@ -36,6 +36,10 @@ namespace ConsoleClient.Controllers
                 Console.WriteLine("14. Postavljanje sefa izdavaca");
                 Console.WriteLine("15. Posetioci koji su kupili knjigu od autora (#autor_posetioci)");
                 Console.WriteLine("16. Posetioci sa dve izabrane knjige na listi zelja (#posetilac_uslov_knjiga)");
+                Console.WriteLine("17. Izmena autora");
+                Console.WriteLine("18. Izmena knjige");
+                Console.WriteLine("19. Izmena izdavaca");
+                Console.WriteLine("20. Izmena kupovine");
                 Console.WriteLine("0. Izlaz");
                 Console.Write("Izaberite opciju: ");
 
@@ -90,6 +94,18 @@ namespace ConsoleClient.Controllers
                     case "16":
                         PosetiociUslovKnjige();
                         break;
+                    case "17": 
+                        IzmeniAutora(); 
+                        break;
+                    case "18": 
+                        IzmeniKnjigu(); 
+                        break;
+                    case "19": 
+                        IzmeniIzdavaca(); 
+                        break;
+                    case "20": 
+                        IzmeniKupovinu(); 
+                        break;
                     case "0":
                         radi = false;
                         break;
@@ -112,7 +128,50 @@ namespace ConsoleClient.Controllers
                 Console.WriteLine("Unos nije ispravan, pokusaj opet");
             }
         }
+
+
+
         
+        private string CitajIzmenu(string trenutno)
+        {
+            string unos = Console.ReadLine();
+            return string.IsNullOrWhiteSpace(unos) ? trenutno : unos.Trim();
+        }
+
+        private int CitajBrojIzmena(int trenutno, int min = int.MinValue, int max = int.MaxValue)
+        {
+            while (true)
+            {
+                string unos = Console.ReadLine();
+                if (string.IsNullOrWhiteSpace(unos))
+                {
+                    return trenutno;
+                }
+
+                if (int.TryParse(unos, out int r) && r >= min && r <= max)
+                {
+                    return r;
+                }
+                Console.WriteLine("Unos nije ispravan.");
+            }
+        }
+
+        //Promena adrese jer je napravljen kao manji deo ostalog 
+        private Adresa IzmeniAdresu(Adresa stara) 
+        {
+            if (stara == null)
+            {
+                stara = new Adresa();
+            }
+            return new Adresa(
+                CitajIzmenu(stara.Ulica),
+                CitajIzmenu(stara.Broj),
+                CitajIzmenu(stara.Grad),
+                CitajIzmenu(stara.Drzava));
+        }
+
+        
+
         private Adresa UnesiAdresu()
         {
             Console.Write("Ulica: ");
@@ -177,17 +236,33 @@ namespace ConsoleClient.Controllers
                 Console.WriteLine("Posetilac nije pronadjen.");
                 return;
             }
-
+            //broj clanske karte ostaje isti
             Console.Write("Novo ime: ");
-            postojeci.Ime = Console.ReadLine();
+            postojeci.Ime = CitajIzmenu(postojeci.Ime);
             Console.Write("Novo prezime: ");
-            postojeci.Prezime = Console.ReadLine();
+            postojeci.Prezime = CitajIzmenu(postojeci.Prezime);
+            Console.WriteLine("Unesite novi datum rodjena:");
+            postojeci.Datum_rodjenja = CitajIzmenu(postojeci.Datum_rodjenja);
             Console.WriteLine("Unesite novu adresu:");
-            postojeci.Adresa = UnesiAdresu();
+            postojeci.Adresa = IzmeniAdresu(postojeci.Adresa);
             Console.Write("Novi telefon: ");
-            postojeci.Kontakt_telefon = Console.ReadLine();
+            postojeci.Kontakt_telefon = CitajIzmenu(postojeci.Kontakt_telefon);
             Console.Write("Novi email: ");
-            postojeci.Email = Console.ReadLine();
+            postojeci.Email = CitajIzmenu(postojeci.Email);
+            Console.Write("Trenutna godina clanstva: ");
+            postojeci.Trenutna_godina_clanstva = CitajBrojIzmena(postojeci.Trenutna_godina_clanstva, 1);
+            Console.Write("Status (R - redovan / V - VIP, Enter ostavlja staro): ");
+            string status = Console.ReadLine().Trim().ToUpper();
+            if (status == "V")
+            {
+                postojeci.Status_Posetioca = Status_posetioca.VIP;
+            }
+            else if (status == "R")
+            {
+                postojeci.Status_Posetioca = Status_posetioca.Redovan;
+            }
+            
+            //Prosecna ocena se ne menja jer zavisi od unetih ocena
 
             sajamService.PosetilacDAO.Izmena_posetioca(postojeci);
             Console.WriteLine("Posetilac izmenjen!");
@@ -257,6 +332,55 @@ namespace ConsoleClient.Controllers
             Console.WriteLine("Knjiga uspesno dodata!");
         }
 
+        private void IzmeniKnjigu()
+        {
+            Console.Write("ISBN knjige za izmenu: ");
+            string isbn = Console.ReadLine();
+            Knjiga postojeci = sajamService.KnjigaDAO.Pronadji_knjigu(isbn);
+            if (postojeci == null) 
+            { 
+                Console.WriteLine("Knjiga nije pronadjena."); 
+                return; 
+            }
+
+            Console.WriteLine("Nova sifra izdavaca (Enter ostavlja staru vrednost)");
+            string sifra = CitajIzmenu(postojeci.Izdavac != null ? postojeci.Izdavac.Sifra : "");
+            Izdavac izdavac = sajamService.IzdavacDAO.Pronadji_izdavaca(sifra);
+            if (izdavac == null) 
+            { 
+                Console.WriteLine("Izdavac ne postoji."); 
+                return; 
+            }
+
+            if (postojeci.Izdavac != null && postojeci.Izdavac != izdavac)
+            {
+                postojeci.Izdavac.Spisak_knjiga.Remove(postojeci);
+            }
+                
+            if (!izdavac.Spisak_knjiga.Contains(postojeci))
+            {
+                izdavac.Spisak_knjiga.Add(postojeci);
+            }
+               
+            postojeci.Izdavac = izdavac;
+
+            Console.Write("Novi naziv: ");
+            postojeci.Naziv = CitajIzmenu(postojeci.Naziv);
+            Console.Write("Nova zanra: ");
+            postojeci.Zanra = CitajIzmenu(postojeci.Zanra);
+            Console.WriteLine("Unesite godinu izdanja:");
+            postojeci.Godina_izdanja = CitajIzmenu(postojeci.Godina_izdanja);
+            Console.WriteLine("Nova cena:");
+            postojeci.Cena = CitajBrojIzmena(postojeci.Cena);
+            Console.Write("Novi broj strana: ");
+            postojeci.Broj_strana = CitajBrojIzmena(postojeci.Broj_strana);
+            
+            
+
+            sajamService.KnjigaDAO.Izmena_knjige(postojeci);
+            Console.WriteLine("Knjiga izmenjena!");
+        }
+
         private void DodajNaListuZelja()
         {
             Console.Write("Broj clanske karte posetioca: ");
@@ -310,7 +434,7 @@ namespace ConsoleClient.Controllers
 
             if (sajamService.AutorDAO.Pronadji_autora(lk) != null)
             {
-                Console.WriteLine("Autpr sa tom kartom vec postoji");
+                Console.WriteLine("Autor sa tom kartom vec postoji");
                 return;
             }
 
@@ -331,6 +455,54 @@ namespace ConsoleClient.Controllers
             Autor novi = new Autor(ime, prezime, datum, adresa, tel, email, lk, god, new List<Knjiga>());
             sajamService.AutorDAO.Dodavanje_autora(novi);
             Console.WriteLine("Autor dodat!");
+        }
+
+        private void IzmeniAutora()
+        {
+            Console.Write("Unesite broj licne karte autora za izmenu: ");
+            string karta = Console.ReadLine();
+            Autor postojeci = sajamService.AutorDAO.Pronadji_autora(karta);
+            if (postojeci == null) 
+            { 
+                Console.WriteLine("Autor nije pronadjen."); 
+                return; 
+            }
+            
+            Console.WriteLine("Godine sikustva (Enter ostavlja staru vrednost)");
+            int god = CitajBrojIzmena(postojeci.Godine_iskustva, 0);
+
+            // ako je autor sef nekog izdavaca, ne sme pasti ispod 5 godina
+            foreach (Izdavac i in sajamService.IzdavacDAO.Prikaz_izdavaca())
+            {
+                if (i.Sef_izdavaca != null && i.Sef_izdavaca.Broj_licne_karte == postojeci.Broj_licne_karte && god < 5)
+                {
+                    Console.WriteLine("Autor je sef izdavaca " + i.Naziv + ", mora imati bar 5 godina iskustva.");
+                    return;
+                }
+            }
+
+            
+
+            Console.Write("Novo ime: ");
+            postojeci.Ime = CitajIzmenu(postojeci.Ime);
+            Console.Write("Novo prezime: ");
+            postojeci.Prezime = CitajIzmenu(postojeci.Prezime);
+            Console.WriteLine("Unesite novi datum rodjena:");
+            postojeci.Datum_rodjenja = CitajIzmenu(postojeci.Datum_rodjenja);
+            Console.WriteLine("Unesite novu adresu:");
+            postojeci.Adresa = IzmeniAdresu(postojeci.Adresa);
+            Console.Write("Novi telefon: ");
+            postojeci.Telefon = CitajIzmenu(postojeci.Telefon);
+            Console.Write("Novi email: ");
+            postojeci.Email = CitajIzmenu(postojeci.Email);
+
+            postojeci.Godine_iskustva = god;
+
+
+
+            sajamService.AutorDAO.Izmena_autora(postojeci);
+            Console.WriteLine("Autor izmenjen!");
+            
         }
 
         private void DodajKnjiguAutoru()
@@ -379,6 +551,34 @@ namespace ConsoleClient.Controllers
             Console.WriteLine("Izdavac dodat!");
         }
 
+        private void IzmeniIzdavaca()
+        {
+            Console.Write("Sifra izdavaca za izmenu: ");
+            string sifra = Console.ReadLine();
+            Izdavac postojeci = sajamService.IzdavacDAO.Pronadji_izdavaca(sifra);
+            if (postojeci == null) 
+            { 
+                Console.WriteLine("Izdavac nije pronadjen."); 
+                return; 
+            }
+
+            Console.WriteLine("Novi naziv (Enter ostavlja staru vrednost)");
+            postojeci.Naziv = CitajIzmenu(postojeci.Naziv);
+            sajamService.IzdavacDAO.Izmena_izdavaca(postojeci);
+
+            string lk = CitajIzmenu(postojeci.Sef_izdavaca != null ? postojeci.Sef_izdavaca.Broj_licne_karte : "");
+            if (lk != "" && (postojeci.Sef_izdavaca == null || postojeci.Sef_izdavaca.Broj_licne_karte != lk))
+            {
+                Autor sef = sajamService.AutorDAO.Pronadji_autora(lk);
+                if (sef == null || !sajamService.IzdavacDAO.Postavljanje_sefa_izdavaca(postojeci.Sifra, sef))
+                {
+                    Console.WriteLine("Sef nije promenjen (autor ne postoji ili ima manje od 5 godina iskustva).");
+                }
+                    
+            }
+            Console.WriteLine("Izdavac izmenjen!");
+        }
+
         private void PostaviSefaIzdavaca()
         {
             Console.Write("Sifra izdavaca: ");
@@ -420,6 +620,28 @@ namespace ConsoleClient.Controllers
             {
                 Console.WriteLine(p);
             }
+        }
+
+        private void IzmeniKupovinu()
+        {
+            Console.Write("Broj clanske karte: "); 
+            string karta = Console.ReadLine();
+            Console.Write("ISBN knjige: "); 
+            string isbn = Console.ReadLine();
+            Console.Write("Datum kupovine: "); 
+            string datum = Console.ReadLine();
+
+            Kupovina k = sajamService.KupovinaDAO.Pronadji_kupovinu(karta, isbn, datum);
+            if (k == null) 
+            { 
+                Console.WriteLine("Kupovina nije pronadjena."); 
+                return; 
+            }
+
+            int ocena = CitajBrojIzmena( (int)k.Ocena, 1, 5);
+            string komentar = CitajIzmenu(k.Komentar);
+            sajamService.Izmeni_kupovinu(karta, isbn, datum, ocena, komentar);
+            Console.WriteLine("Kupovina izmenjena!");
         }
     }
 }
