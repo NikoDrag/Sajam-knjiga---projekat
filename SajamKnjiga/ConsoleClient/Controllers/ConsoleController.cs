@@ -163,11 +163,17 @@ namespace ConsoleClient.Controllers
             {
                 stara = new Adresa();
             }
-            return new Adresa(
-                CitajIzmenu(stara.Ulica),
-                CitajIzmenu(stara.Broj),
-                CitajIzmenu(stara.Grad),
-                CitajIzmenu(stara.Drzava));
+            Console.WriteLine("Unesite ulicu: ");
+            stara.Ulica = CitajIzmenu(stara.Ulica);
+
+            Console.WriteLine("Unesite ulicu: ");
+            stara.Broj = CitajIzmenu(stara.Broj);
+            Console.WriteLine("Unesite ulicu: ");
+            stara.Grad = CitajIzmenu(stara.Broj);
+            Console.WriteLine("Unesite ulicu: ");
+            stara.Drzava = CitajIzmenu(stara.Drzava);
+
+            return stara;
         }
 
         
