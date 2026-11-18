@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using Core.Models;
 using Core.DAO;
+
 
 namespace Core.Services
 {
@@ -165,6 +167,170 @@ namespace Core.Services
                 p.Prosecna_ocena_recenzija = p.Spisak_kupljenih_knjiga.Average(x => x.Ocena);
                 PosetilacDAO.Sacuvaj_u_fajl();
             }
+            return true;
+        }
+
+        private void Izracunaj_prosek(Posetilac p)
+        {
+            p.Prosecna_ocena_recenzija = p.Spisak_kupljenih_knjiga.Count > 0 
+                ? p.Spisak_kupljenih_knjiga.Average(x => x.Ocena): 0;
+        }
+
+        public bool Obrisi_autora(string broj_licne_karte)
+        {
+            Autor autor = AutorDAO.Pronadji_autora(broj_licne_karte);
+            if (autor == null)
+            {
+                return false;
+            }
+
+            // uklanja autora sa svih knjiga
+            foreach (Knjiga k in KnjigaDAO.Prikaz_knjiga())
+            {
+                k.Autori.Remove(autor);
+            }
+
+            // ako je sef nekog izdavaca, izdavac ostaje bez sefa
+            bool izdavac_izmenjen = false;
+            foreach (Izdavac i in IzdavacDAO.Prikaz_izdavaca())
+            {
+                if (i.Sef_izdavaca != null && i.Sef_izdavaca.Broj_licne_karte == broj_licne_karte)
+                {
+                    i.Sef_izdavaca = null;
+                    izdavac_izmenjen = true;
+                }
+                i.Spisak_autora.Remove(autor);
+            }
+            if (izdavac_izmenjen)
+            {
+                IzdavacDAO.Sacuvaj_u_fajl();
+            }
+
+            AutorDAO.Brisanje_autora(broj_licne_karte);
+            return true;
+        }
+
+        public bool Obrisi_izdavaca(string sifra, out string poruka)
+        {
+            poruka = "";
+            Izdavac izdavac = IzdavacDAO.Pronadji_izdavaca(sifra);
+            if (izdavac == null)
+            {
+                poruka = "Izdavac nije pronadjen.";
+                return false;
+            }
+            //Any proverava da li postoji bilo koji element u listi da isupnjava uslov
+            if (KnjigaDAO.Prikaz_knjiga().Any(k => k.Izdavac != null && k.Izdavac.Sifra == sifra))
+            {
+                poruka = "Izdavac ima knjige. Prvo obrisi knjige ili promeni izdavaca.";
+                return false;
+            }
+
+            IzdavacDAO.Brisanje_izdavaca(sifra);
+            return true;
+        }
+
+        public bool Obrisi_knjigu(string isbn)
+        {
+            Knjiga knjiga = KnjigaDAO.Pronadji_knjigu(isbn);
+            if (knjiga == null)
+            {
+                return false;
+            }
+
+            // Uklanja knjigu sa liste kupovine
+            foreach (Kupovina kup in KupovinaDAO.Prikaz_kupovina().Where(x => x.Knjiga != null && x.Knjiga.ISBN == isbn).ToList())
+            {
+                if (kup.Posetilac != null)
+                {
+                    kup.Posetilac.Spisak_kupljenih_knjiga.Remove(kup);
+                    Izracunaj_prosek(kup.Posetilac);
+                }
+            }
+            KupovinaDAO.Prikaz_kupovina().RemoveAll(x => x.Knjiga != null && x.Knjiga.ISBN == isbn);
+            KupovinaDAO.Sacuvaj_u_fajl();
+
+            // Uklanja knjigu sa liste zelja
+            foreach (Posetilac p in PosetilacDAO.Prikaz_posetilaca())
+            {
+                p.Lista_zelja.RemoveAll(x => x.ISBN == isbn);
+            }
+            PosetilacDAO.Sacuvaj_u_fajl();
+
+            // Uklanja knjigu iz autorove liste knjiga
+            foreach (Autor a in AutorDAO.Prikaz_autora())
+            {
+                if (a.Knjige != null)
+                {
+                    a.Knjige.RemoveAll(x => x.ISBN == isbn);
+                }
+            }
+            AutorDAO.Sacuvaj_u_fajl();
+
+            // Uklanja knjigu sa izdavacovog spiska knjiga
+            if (knjiga.Izdavac != null)
+            {
+                knjiga.Izdavac.Spisak_knjiga.Remove(knjiga);
+            }
+
+            KnjigaDAO.Brisanje_knjige(isbn);
+            return true;
+        }
+
+        public bool Obrisi_kupovinu(string karta, string isbn, string datum)
+        {
+            Kupovina kup = KupovinaDAO.Pronadji_kupovinu(karta, isbn, datum);
+            if (kup == null)
+            {
+                return false;
+            }
+
+            Posetilac p = kup.Posetilac;
+            Knjiga k = kup.Knjiga;
+
+            KupovinaDAO.Ponistavanje_kupovine(karta, isbn, datum);
+
+            if (p != null)
+            {
+                p.Spisak_kupljenih_knjiga.Remove(kup);
+                Izracunaj_prosek(p); //mora opet da racuna prosek
+
+                // ako posetilac nema nijednu kupovinu te knjige, uklanjamo ga iz liste kupaca
+                if (k != null && !p.Spisak_kupljenih_knjiga.Any(x => x.Knjiga != null && x.Knjiga.ISBN == k.ISBN))
+                {
+                    k.Posetilci_kupili.Remove(p);
+                }
+                PosetilacDAO.Sacuvaj_u_fajl();
+            }
+            return true;
+        }
+
+        public bool Obrisi_posetioca(string broj_clanske_karte)
+        {
+            Posetilac p = PosetilacDAO.Pronadji_posetioca(broj_clanske_karte);
+            if (p == null)
+            {
+                return false;
+            }
+
+            // Brise posetioca sa svih kupovine posetioca
+            foreach (Kupovina kup in KupovinaDAO.Prikaz_kupovina())
+            {
+                if (kup.Posetilac != null && kup.Posetilac.Broj_clanske_karte == broj_clanske_karte && kup.Knjiga != null)
+                {
+                    kup.Knjiga.Posetilci_kupili.Remove(p);
+                }
+            }
+            KupovinaDAO.Prikaz_kupovina().RemoveAll(x => x.Posetilac != null && x.Posetilac.Broj_clanske_karte == broj_clanske_karte);
+            KupovinaDAO.Sacuvaj_u_fajl();
+
+            // Brise posetioca sa lista zelja
+            foreach (Knjiga k in p.Lista_zelja)
+            {
+                k.Posetilci_lista_zelja.Remove(p);
+            }
+
+            PosetilacDAO.Brisanje_posetioca(broj_clanske_karte);
             return true;
         }
 

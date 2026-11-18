@@ -40,6 +40,10 @@ namespace ConsoleClient.Controllers
                 Console.WriteLine("18. Izmena knjige");
                 Console.WriteLine("19. Izmena izdavaca");
                 Console.WriteLine("20. Izmena kupovine");
+                Console.WriteLine("21. Brisanje knjige");
+                Console.WriteLine("22. Brisanje autora");
+                Console.WriteLine("23. Brisanje izdavaca");
+                Console.WriteLine("24. Brisanje kupovine");
                 Console.WriteLine("0. Izlaz");
                 Console.Write("Izaberite opciju: ");
 
@@ -106,11 +110,23 @@ namespace ConsoleClient.Controllers
                     case "20": 
                         IzmeniKupovinu(); 
                         break;
+                    case "21":
+                        ObrisiKnjigu();
+                        break;
+                    case "22":
+                        ObrisiAutora();
+                        break;
+                    case "23":
+                        ObrisiIzdavaca();
+                        break;
+                    case "24":
+                        ObrisiKupovinu();
+                        break;
                     case "0":
                         radi = false;
                         break;
                     default:
-                        Console.WriteLine("Nepoznata opcija!");
+                        Console.WriteLine("Nepoznata opcija.");
                         break;
                 }
             }
@@ -228,7 +244,7 @@ namespace ConsoleClient.Controllers
 
             Posetilac novi = new Posetilac(ime, prezime, datum, adresa, tel, email, karta, godina, status, 0);
             sajamService.PosetilacDAO.Dodavanje_posetioca(novi);
-            Console.WriteLine("Posetilac uspesno dodat!");
+            Console.WriteLine("Posetilac uspesno dodat.");
         }
 
         private void IzmeniPosetioca()
@@ -270,16 +286,25 @@ namespace ConsoleClient.Controllers
             //Prosecna ocena se ne menja jer zavisi od unetih ocena
 
             sajamService.PosetilacDAO.Izmena_posetioca(postojeci);
-            Console.WriteLine("Posetilac izmenjen!");
+            Console.WriteLine("Posetilac izmenjen.");
         }
 
         private void ObrisiPosetioca()
         {
             Console.Write("Unesite broj clanske karte za brisanje: ");
             string karta = Console.ReadLine();
-            sajamService.PosetilacDAO.Brisanje_posetioca(karta);
-            Console.WriteLine("Posetilac obrisan (ako je postojao).");
+
+            if (sajamService.Obrisi_posetioca(karta))
+            {
+                Console.WriteLine("Posetilac obrisan.");
+            }
+            else
+            {
+                Console.WriteLine("Posetilac nije pronadjen.");
+            }
         }
+
+
 
         private void PrikaziKnjige()
         {
@@ -334,7 +359,7 @@ namespace ConsoleClient.Controllers
                 new List<Posetilac>()
             );
             sajamService.KnjigaDAO.Dodavanje_knjige(nova);
-            Console.WriteLine("Knjiga uspesno dodata!");
+            Console.WriteLine("Knjiga uspesno dodata.");
         }
 
         private void IzmeniKnjigu()
@@ -343,7 +368,7 @@ namespace ConsoleClient.Controllers
             string isbn = Console.ReadLine();
             Knjiga postojeci = sajamService.KnjigaDAO.Pronadji_knjigu(isbn);
             if (postojeci == null) 
-            { 
+            {
                 Console.WriteLine("Knjiga nije pronadjena."); 
                 return; 
             }
@@ -388,7 +413,14 @@ namespace ConsoleClient.Controllers
             
 
             sajamService.KnjigaDAO.Izmena_knjige(postojeci);
-            Console.WriteLine("Knjiga izmenjena!");
+            Console.WriteLine("Knjiga izmenjena.");
+        }
+
+        private void ObrisiKnjigu()
+        {
+            Console.Write("ISBN knjige za brisanje: ");
+            string isbn = Console.ReadLine();
+            Console.WriteLine(sajamService.Obrisi_knjigu(isbn) ? "Knjiga obrisana." : "Knjiga nije pronadjena.");
         }
 
         private void DodajNaListuZelja()
@@ -402,7 +434,7 @@ namespace ConsoleClient.Controllers
             if (k != null)
             {
                 sajamService.PosetilacDAO.Dodavanje_knjige_na_listu_zelja(karta, k);
-                Console.WriteLine("Knjiga dodata na listu zelja!");
+                Console.WriteLine("Knjiga dodata na listu zelja.");
             }
             else
             {
@@ -464,7 +496,7 @@ namespace ConsoleClient.Controllers
 
             Autor novi = new Autor(ime, prezime, datum, adresa, tel, email, lk, god, new List<Knjiga>());
             sajamService.AutorDAO.Dodavanje_autora(novi);
-            Console.WriteLine("Autor dodat!");
+            Console.WriteLine("Autor dodat.");
         }
 
         private void IzmeniAutora()
@@ -511,8 +543,15 @@ namespace ConsoleClient.Controllers
 
 
             sajamService.AutorDAO.Izmena_autora(postojeci);
-            Console.WriteLine("Autor izmenjen!");
+            Console.WriteLine("Autor izmenjen.");
             
+        }
+
+        private void ObrisiAutora()
+        {
+            Console.Write("Broj licne karte autora za brisanje: ");
+            string karta = Console.ReadLine();
+            Console.WriteLine(sajamService.Obrisi_autora(karta) ? "Autor obrisan." : "Autor nije pronadjen.");
         }
 
         private void DodajKnjiguAutoru()
@@ -526,7 +565,7 @@ namespace ConsoleClient.Controllers
             if (k != null)
             {
                 sajamService.AutorDAO.Dodavanje_knjige_autoru(lk, k);
-                Console.WriteLine("Knjiga dodata autoru!");
+                Console.WriteLine("Knjiga dodata autoru.");
             }
             else
             {
@@ -558,7 +597,7 @@ namespace ConsoleClient.Controllers
 
             Izdavac novi = new Izdavac(sifra, naziv, null);
             sajamService.IzdavacDAO.Dodavanje_izdavaca(novi);
-            Console.WriteLine("Izdavac dodat!");
+            Console.WriteLine("Izdavac dodat.");
         }
 
         private void IzmeniIzdavaca()
@@ -587,7 +626,21 @@ namespace ConsoleClient.Controllers
                 }
                     
             }
-            Console.WriteLine("Izdavac izmenjen!");
+            Console.WriteLine("Izdavac izmenjen.");
+        }
+
+        private void ObrisiIzdavaca()
+        {
+            Console.Write("Sifra izdavaca za brisanje: ");
+            string sifra = Console.ReadLine();
+            if (sajamService.Obrisi_izdavaca(sifra, out string poruka))
+            {
+                Console.WriteLine("Izdavac obrisan.");
+            }
+            else
+            {
+                Console.WriteLine(poruka);
+            }
         }
 
         private void PostaviSefaIzdavaca()
@@ -601,7 +654,7 @@ namespace ConsoleClient.Controllers
             if (a != null)
             {
                 bool uspeh = sajamService.IzdavacDAO.Postavljanje_sefa_izdavaca(sifra, a);
-                Console.WriteLine(uspeh ? "Sef izdavaca postavljen!" : "Greska: Autor mora imati bar 5 godina iskustva ili izdavac ne postoji.");
+                Console.WriteLine(uspeh ? "Sef izdavaca postavljen." : "Greska: Autor mora imati bar 5 godina iskustva ili izdavac ne postoji.");
             }
             else
             {
@@ -652,7 +705,18 @@ namespace ConsoleClient.Controllers
             int ocena = CitajBrojIzmena( (int)k.Ocena, 1, 5);
             string komentar = CitajIzmenu(k.Komentar);
             sajamService.Izmeni_kupovinu(karta, isbn, datum, ocena, komentar);
-            Console.WriteLine("Kupovina izmenjena!");
+            Console.WriteLine("Kupovina izmenjena.");
+        }
+
+        private void ObrisiKupovinu()
+        {
+            Console.Write("Broj clanske karte: ");
+            string karta = Console.ReadLine();
+            Console.Write("ISBN knjige: ");
+            string isbn = Console.ReadLine();
+            Console.Write("Datum kupovine: ");
+            string datum = Console.ReadLine();
+            Console.WriteLine(sajamService.Obrisi_kupovinu(karta, isbn, datum) ? "Kupovina obrisana." : "Kupovina nije pronadjena.");
         }
     }
 }
