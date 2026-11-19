@@ -47,6 +47,7 @@ namespace ConsoleClient.Controllers
                 Console.WriteLine("25. Prikaz liste zelja posetioca");
                 Console.WriteLine("26. Prikaz knjiga izdavaca");
                 Console.WriteLine("27. Prikaz autora izdavaca");
+                Console.WriteLine("28. Prikaz kupovina posetioca");
                 Console.WriteLine("0. Izlaz");
                 Console.Write("Izaberite opciju: ");
 
