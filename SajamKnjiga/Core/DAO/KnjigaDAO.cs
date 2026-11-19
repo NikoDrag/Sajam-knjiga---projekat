@@ -80,6 +80,13 @@ namespace Core.DAO
             File.WriteAllLines(Putanja, linije);
         }
 
+        public List<Knjiga> Sortiranje_knjiga()
+        {
+            List<Knjiga> sortirane = new List<Knjiga>(Knjige);
+            sortirane.Sort((k1, k2) => string.Compare(k1.Naziv, k2.Naziv));
+            return sortirane; //po nazivu sort
+        }
+
 
         public void Dodavanje_knjige(Knjiga knjiga)
         {
