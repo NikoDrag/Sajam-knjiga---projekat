@@ -47,6 +47,7 @@ namespace ConsoleClient.Controllers
                 Console.WriteLine("25. Prikaz liste zelja posetioca");
                 Console.WriteLine("26. Prikaz knjiga izdavaca");
                 Console.WriteLine("27. Prikaz autora izdavaca");
+                Console.WriteLine("28. Prikaz kupovina posetioca");
                 Console.WriteLine("0. Izlaz");
                 Console.Write("Izaberite opciju: ");
 
@@ -133,6 +134,9 @@ namespace ConsoleClient.Controllers
                         break;
                     case "27":
                         PrikaziAutoreIzdavaca();
+                        break;
+                    case "28":
+                        PrikaziKupovine();
                         break;
                     case "0":
                         radi = false;
@@ -848,6 +852,45 @@ namespace ConsoleClient.Controllers
             Console.Write("Datum kupovine: ");
             string datum = Console.ReadLine();
             Console.WriteLine(sajamService.Obrisi_kupovinu(karta, isbn, datum) ? "Kupovina obrisana." : "Kupovina nije pronadjena.");
+        }
+
+        private void PrikaziKupovine()
+        {
+            Console.Write("Broj clanske karte posetioca: ");
+            string karta = Console.ReadLine();
+
+            Posetilac p = sajamService.PosetilacDAO.Pronadji_posetioca(karta);
+            if (p == null)
+            {
+                Console.WriteLine("Posetilac nije pronadjen.");
+                return;
+            }
+
+            Console.WriteLine("\n---- KUPOVINE -----");
+            Console.WriteLine(p.Ime + " " + p.Prezime + " (" + p.Broj_clanske_karte + ")");
+            Console.WriteLine("--------------------------------------------");
+
+            if (p.Spisak_kupljenih_knjiga == null || p.Spisak_kupljenih_knjiga.Count == 0)
+            {
+                Console.WriteLine("   (nema kupovina)");
+                return;
+            }
+
+            int ukupna_potrosnja = 0;
+            foreach (Kupovina kup in p.Spisak_kupljenih_knjiga)
+            {
+                Console.WriteLine("Datum:    " + kup.Datum_kupovine);
+                Console.WriteLine("Knjiga:   [" + kup.Knjiga.ISBN + "] " + kup.Knjiga.Naziv);
+                Console.WriteLine("Cena:     " + kup.Knjiga.Cena);
+                Console.WriteLine("Ocena:    " + kup.Ocena);
+                Console.WriteLine("Komentar: " + kup.Komentar);
+                Console.WriteLine("--------------------------------------------");
+
+                ukupna_potrosnja += kup.Knjiga.Cena;
+            }
+
+            Console.WriteLine("Prosecna ocena:   " + p.Prosecna_ocena_recenzija);
+            Console.WriteLine("Ukupna potrosnja: " + ukupna_potrosnja);
         }
     }
 }
