@@ -236,6 +236,44 @@ namespace Core.DAO
             return true;
         }
 
+        public bool Uklanjanje_knjige_sa_liste_zelja(string broj_clanske_karte, string isbn)
+        {
+            Posetilac p = Pronadji_posetioca(broj_clanske_karte);
+            if (p == null || p.Lista_zelja == null)
+            {
+                return false;
+            }
+
+
+            Knjiga za_brisanje = null;
+            foreach (Knjiga k in p.Lista_zelja)
+            {
+                if (k.ISBN == isbn)
+                {
+                    za_brisanje = k;
+                    break;
+                }
+            }
+
+            if (za_brisanje == null)
+            {
+                return false; 
+            }
+
+
+            p.Lista_zelja.Remove(za_brisanje);
+
+            if (za_brisanje.Posetilci_lista_zelja != null)
+            {
+                za_brisanje.Posetilci_lista_zelja.Remove(p);
+            }
+
+
+
+            Sacuvaj_u_fajl();
+            return true;
+        }
+
         public List<Posetilac> Sortiranje_posetilaca()
         {
             List<Posetilac> sortirani = new List<Posetilac>(Posetioci);

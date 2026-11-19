@@ -48,6 +48,7 @@ namespace ConsoleClient.Controllers
                 Console.WriteLine("26. Prikaz knjiga izdavaca");
                 Console.WriteLine("27. Prikaz autora izdavaca");
                 Console.WriteLine("28. Prikaz kupljenih knjiga posetioca");
+                Console.WriteLine("29. Uklanjanje knjige sa liste zelja");
                 Console.WriteLine("30. Prikaz knjiga autora");
                 Console.WriteLine("31. Uklanjanje knjige sa autora");
                 Console.WriteLine("0. Izlaz");
@@ -139,6 +140,9 @@ namespace ConsoleClient.Controllers
                         break;
                     case "28":
                         PrikaziKupljeneKnjigePosetioca();
+                        break;
+                    case "29":
+                        UkloniSaListeZelja();
                         break;
                     case "30":
                         PrikaziKnjigeAutora();
@@ -457,6 +461,24 @@ namespace ConsoleClient.Controllers
                 Console.WriteLine("   - [" + k.ISBN + "] " + k.Naziv + " (" + autori + ") - " + k.Cena);
             }
             Console.WriteLine("--------------------------------------------");
+        }
+
+        private void UkloniSaListeZelja()
+        {
+            Console.Write("Broj clanske karte posetioca: ");
+            string karta = Console.ReadLine();
+            Console.Write("ISBN knjige: ");
+            string isbn = Console.ReadLine();
+
+            bool uspeh = sajamService.PosetilacDAO.Uklanjanje_knjige_sa_liste_zelja(karta, isbn);
+            if (uspeh)
+            {
+                Console.WriteLine("Knjiga uklonjena sa liste zelja.");
+            }
+            else
+            {
+                Console.WriteLine("Greska: Posetilac ne postoji ili knjiga nije na njegovoj listi zelja.");
+            }
         }
 
         private void PrikaziKnjige()
