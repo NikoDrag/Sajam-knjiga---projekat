@@ -160,6 +160,13 @@ namespace Core.DAO
             }
         }
 
+        public List<Autor> Sortiranje_autora()
+        {
+            List<Autor> sortirani = new List<Autor>(Autori);
+            sortirani.Sort((a1, a2) => string.Compare(a1.Ime, a2.Ime));
+            return sortirani; //po imenu sort
+        }
+
         public List<Autor> Prikaz_autora()
         {
             return Autori;
