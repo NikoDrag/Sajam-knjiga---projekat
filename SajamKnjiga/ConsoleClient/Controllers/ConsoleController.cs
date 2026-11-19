@@ -51,6 +51,8 @@ namespace ConsoleClient.Controllers
                 Console.WriteLine("29. Uklanjanje knjige sa liste zelja");
                 Console.WriteLine("30. Prikaz knjiga autora");
                 Console.WriteLine("31. Uklanjanje knjige sa autora");
+                Console.WriteLine("33. Pretraga autora po broju licne karte");
+                Console.WriteLine("34. Pretraga knjige po ISBN-u");
                 Console.WriteLine("0. Izlaz");
                 Console.Write("Izaberite opciju: ");
 
@@ -150,6 +152,12 @@ namespace ConsoleClient.Controllers
                     case "31":
                         UkloniKnjiguAutoru();
                         break;
+                    case "32":
+                        PretraziAutora();
+                        break;
+                    case "33":
+                        PretraziKnjigu();
+                        break;
                     case "0":
                         radi = false;
                         break;
@@ -238,33 +246,7 @@ namespace ConsoleClient.Controllers
         }
 
 
-        private void PrikaziKupljeneKnjigePosetioca()
-        {
-            Console.Write("Broj clanske karte posetioca: ");
-            string karta = Console.ReadLine();
-
-            Posetilac p = sajamService.PosetilacDAO.Pronadji_posetioca(karta);
-            if (p == null)
-            {
-                Console.WriteLine("Posetilac nije pronadjen.");
-                return;
-            }
-
-            Console.WriteLine($"\n----- KUPLJENE KNJIGE POSETIOCA: {p.Ime} {p.Prezime} ({p.Broj_clanske_karte}) -----");
-            if (p.Spisak_kupljenih_knjiga == null || p.Spisak_kupljenih_knjiga.Count == 0)
-            {
-                Console.WriteLine("(nema knjiga)");
-                return;
-            }
-
-            foreach (Kupovina kup in p.Spisak_kupljenih_knjiga)
-            {
-                if (kup.Knjiga != null)
-                {
-                    Console.WriteLine($"{kup.Knjiga.Naziv} ({kup.Knjiga.ISBN}) | Datum: {kup.Datum_kupovine} | Ocena: {kup.Ocena} | Komentar: {kup.Komentar}");
-                }
-            }
-        }
+        
 
         private string CitajIzmenu(string trenutno)
         {
@@ -480,13 +462,55 @@ namespace ConsoleClient.Controllers
                 Console.WriteLine("Greska: Posetilac ne postoji ili knjiga nije na njegovoj listi zelja.");
             }
         }
+        
+        private void PrikaziKupljeneKnjigePosetioca()
+        {
+            Console.Write("Broj clanske karte posetioca: ");
+            string karta = Console.ReadLine();
 
+            Posetilac p = sajamService.PosetilacDAO.Pronadji_posetioca(karta);
+            if (p == null)
+            {
+                Console.WriteLine("Posetilac nije pronadjen.");
+                return;
+            }
+
+            Console.WriteLine($"\n----- KUPLJENE KNJIGE POSETIOCA: {p.Ime} {p.Prezime} ({p.Broj_clanske_karte}) -----");
+            if (p.Spisak_kupljenih_knjiga == null || p.Spisak_kupljenih_knjiga.Count == 0)
+            {
+                Console.WriteLine("(nema knjiga)");
+                return;
+            }
+
+            foreach (Kupovina kup in p.Spisak_kupljenih_knjiga)
+            {
+                if (kup.Knjiga != null)
+                {
+                    Console.WriteLine($"{kup.Knjiga.Naziv} ({kup.Knjiga.ISBN}) | Datum: {kup.Datum_kupovine} | Ocena: {kup.Ocena} | Komentar: {kup.Komentar}");
+                }
+            }
+        }
         private void PrikaziKnjige()
         {
             foreach (Knjiga k in sajamService.KnjigaDAO.Prikaz_knjiga())
             {
                 Console.WriteLine(k);
             }
+        }
+
+        private void PretraziKnjigu()
+        {
+            Console.Write("ISBN knjige: ");
+            string isbn = Console.ReadLine();
+
+            Knjiga k = sajamService.KnjigaDAO.Pronadji_knjigu(isbn);
+            if (k == null)
+            {
+                Console.WriteLine("Knjiga nije pronadjena.");
+                return;
+            }
+
+            Console.WriteLine(k);
         }
 
         private void DodajKnjigu()
@@ -648,6 +672,21 @@ namespace ConsoleClient.Controllers
             {
                 Console.WriteLine(a);
             }
+        }
+
+        private void PretraziAutora()
+        {
+            Console.Write("Broj licne karte autora: ");
+            string lk = Console.ReadLine();
+
+            Autor a = sajamService.AutorDAO.Pronadji_autora(lk);
+            if (a == null)
+            {
+                Console.WriteLine("Autor nije pronadjen.");
+                return;
+            }
+
+            Console.WriteLine(a);
         }
 
         private void DodajAutora()
