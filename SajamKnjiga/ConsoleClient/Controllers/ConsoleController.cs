@@ -43,11 +43,12 @@ namespace ConsoleClient.Controllers
                 Console.WriteLine("21. Brisanje knjige");
                 Console.WriteLine("22. Brisanje autora");
                 Console.WriteLine("23. Brisanje izdavaca");
-                Console.WriteLine("24. Brisanje kupovine");
+                Console.WriteLine("24. Ponistavanje kupovine");
                 Console.WriteLine("25. Prikaz liste zelja posetioca");
                 Console.WriteLine("26. Prikaz knjiga izdavaca");
                 Console.WriteLine("27. Prikaz autora izdavaca");
                 Console.WriteLine("28. Prikaz kupljenih knjiga posetioca");
+                Console.WriteLine("30. Prikaz knjiga autora");
                 Console.WriteLine("0. Izlaz");
                 Console.Write("Izaberite opciju: ");
 
@@ -135,6 +136,12 @@ namespace ConsoleClient.Controllers
                     case "27":
                         PrikaziAutoreIzdavaca();
                         break;
+                    case "28":
+                        PrikaziKupljeneKnjigePosetioca();
+                        break;
+                    case "30":
+                        PrikaziKnjigeAutora();
+                        break;
                     case "0":
                         radi = false;
                         break;
@@ -144,6 +151,32 @@ namespace ConsoleClient.Controllers
                 }
             }
         }
+
+        private void PrikaziKnjigeAutora()
+        {
+            Console.Write("Broj licne karte autora: ");
+            string lk = Console.ReadLine();
+
+            Autor a = sajamService.AutorDAO.Pronadji_autora(lk);
+            if (a == null)
+            {
+                Console.WriteLine("Autor nije pronadjen.");
+                return;
+            }
+
+            Console.WriteLine($"\n----- KNJIGE AUTORA: {a.Ime} {a.Prezime} ({a.Broj_licne_karte}) -----");
+            if (a.Knjige == null || a.Knjige.Count == 0)
+            {
+                Console.WriteLine("(nema knjiga)");
+                return;
+            }
+
+            foreach (Knjiga k in a.Knjige)
+            {
+                Console.WriteLine(k);
+            }
+        }
+
 
         // Provera da li je unos validan broj
         private int CitajBroj(int min = int.MinValue, int max = int.MaxValue)
