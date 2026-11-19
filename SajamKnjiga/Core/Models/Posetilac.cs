@@ -60,30 +60,9 @@ namespace Core.Models
         }
         public override string ToString()
         {
-            string kupljeneTekst = "nema";
-            if (Spisak_kupljenih_knjiga != null && Spisak_kupljenih_knjiga.Count > 0)
-            {
-                List<string> kupljene = new List<string>();
-                foreach (Kupovina kup in Spisak_kupljenih_knjiga)
-                {
-                    if (kup.Knjiga != null)
-                    {
-                        string info = !string.IsNullOrEmpty(kup.Knjiga.Naziv)
-                            ? kup.Knjiga.Naziv + " (" + kup.Knjiga.ISBN + ")"
-                            : kup.Knjiga.ISBN;
-                        kupljene.Add(info + " - ocena: " + kup.Ocena);
-                    }
-                }
-                if (kupljene.Count > 0)
-                {
-                    kupljeneTekst = string.Join("; ", kupljene);
-                }
-            }
-
             return Ime + " " + Prezime + ", " + Datum_rodjenja + ", " + Adresa + ", " +
                    Kontakt_telefon + ", " + Email + ", " + Broj_clanske_karte + ", " +
-                   Trenutna_godina_clanstva + ", " + Status_Posetioca + ", " + Prosecna_ocena_recenzija +
-                   " | Kupljene knjige: [" + kupljeneTekst + "]";
+                   Trenutna_godina_clanstva + ", " + Status_Posetioca + ", " + Prosecna_ocena_recenzija;
         }
 
     }

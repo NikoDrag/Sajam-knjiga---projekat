@@ -47,21 +47,7 @@ namespace Core.Models
                 }
             }
 
-            string knjigeTekst = "nema";
-            if (Spisak_knjiga != null && Spisak_knjiga.Count > 0)
-            {
-                List<string> nazivi = new List<string>();
-                foreach (Knjiga k in Spisak_knjiga)
-                {
-                    if (!string.IsNullOrEmpty(k.Naziv))
-                        nazivi.Add(k.Naziv + " (" + k.ISBN + ")");
-                    else
-                        nazivi.Add(k.ISBN);
-                }
-                knjigeTekst = string.Join("; ", nazivi);
-            }
-
-            return Sifra + ", " + Naziv + ", Sef: " + sefTekst + " | Knjige: [" + knjigeTekst + "]";
+            return Sifra + ", " + Naziv + ", Sef: " + sefTekst;
         }
     }
 }
