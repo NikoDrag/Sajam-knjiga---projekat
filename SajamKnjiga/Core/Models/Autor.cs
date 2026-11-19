@@ -18,7 +18,10 @@ namespace Core.Models
         public int Godine_iskustva { get; set; }
         public List<Knjiga> Knjige { get; set; }
 
-        public Autor() { }
+        public Autor()
+        {
+            Knjige = new List<Knjiga>();
+        }
 
         public Autor(string ime, string prezime, string datum_rodjenja, Adresa adresa, string telefon, string email, string broj_licne_karte, int godine_iskustva, List<Knjiga> knjige)
         {
@@ -30,13 +33,28 @@ namespace Core.Models
             Email = email;
             Broj_licne_karte = broj_licne_karte;
             Godine_iskustva = godine_iskustva;
-            Knjige = knjige;
+            Knjige = knjige ?? new List<Knjiga>();
         }
 
         public override string ToString()
         {
+            string knjigeTekst = "nema";
+            if (Knjige != null && Knjige.Count > 0)
+            {
+                List<string> nazivi = new List<string>();
+                foreach (Knjiga k in Knjige)
+                {
+                    if (!string.IsNullOrEmpty(k.Naziv))
+                        nazivi.Add(k.Naziv + " (" + k.ISBN + ")");
+                    else
+                        nazivi.Add(k.ISBN);
+                }
+                knjigeTekst = string.Join("; ", nazivi);
+            }
+
             return Ime + ", " + Prezime + ", " + Datum_rodjenja + ", " + Adresa + ", " +
-                   Telefon + ", " + Email + ", " + Broj_licne_karte + ", " + Godine_iskustva;
+                   Telefon + ", " + Email + ", " + Broj_licne_karte + ", " + Godine_iskustva +
+                   " | Knjige: [" + knjigeTekst + "]";
         }
     }
 }

@@ -80,10 +80,21 @@ namespace Core.DAO
             File.WriteAllLines(Putanja, linije);
         }
 
-       
+
         public void Dodavanje_knjige(Knjiga knjiga)
         {
             Knjige.Add(knjiga);
+            if (knjiga.Izdavac != null)
+            {
+                if (knjiga.Izdavac.Spisak_knjiga == null)
+                {
+                    knjiga.Izdavac.Spisak_knjiga = new List<Knjiga>();
+                }
+                if (!knjiga.Izdavac.Spisak_knjiga.Contains(knjiga))
+                {
+                    knjiga.Izdavac.Spisak_knjiga.Add(knjiga);
+                }
+            }
             Sacuvaj_u_fajl();
         }
 
