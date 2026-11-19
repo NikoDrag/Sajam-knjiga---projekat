@@ -51,8 +51,8 @@ namespace ConsoleClient.Controllers
                 Console.WriteLine("29. Uklanjanje knjige sa liste zelja");
                 Console.WriteLine("30. Prikaz knjiga autora");
                 Console.WriteLine("31. Uklanjanje knjige sa autora");
-                Console.WriteLine("33. Pretraga autora po broju licne karte");
-                Console.WriteLine("34. Pretraga knjige po ISBN-u");
+                Console.WriteLine("32. Pretraga autora po broju licne karte");
+                Console.WriteLine("33. Pretraga knjige po ISBN-u");
                 Console.WriteLine("0. Izlaz");
                 Console.Write("Izaberite opciju: ");
 
