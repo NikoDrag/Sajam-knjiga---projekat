@@ -200,15 +200,40 @@ namespace Core.DAO
             return Posetioci;
         }
 
-        public void Dodavanje_knjige_na_listu_zelja(string broj_clanske_karte, Knjiga knjiga)
+        public bool Dodavanje_knjige_na_listu_zelja(string broj_clanske_karte, Knjiga knjiga)
         {
             Posetilac p = Pronadji_posetioca(broj_clanske_karte);
-            if (p != null && knjiga != null && !p.Lista_zelja.Contains(knjiga))
+            if (p == null || knjiga == null)
             {
-                p.Lista_zelja.Add(knjiga);
-                knjiga.Posetilci_lista_zelja.Add(p);
-                Sacuvaj_u_fajl();
+                return false;
             }
+
+            if (p.Lista_zelja == null)
+            {
+                p.Lista_zelja = new List<Knjiga>();
+            }
+
+            foreach (Knjiga postojeca in p.Lista_zelja)
+            {
+                if (postojeca.ISBN == knjiga.ISBN)
+                {
+                    return false;
+                }
+            }
+
+            p.Lista_zelja.Add(knjiga);
+
+            if (knjiga.Posetilci_lista_zelja == null)
+            {
+                knjiga.Posetilci_lista_zelja = new List<Posetilac>();
+            }
+            if (!knjiga.Posetilci_lista_zelja.Contains(p))
+            {
+                knjiga.Posetilci_lista_zelja.Add(p);
+            }
+
+            Sacuvaj_u_fajl();
+            return true;
         }
 
         public List<Posetilac> Sortiranje_posetilaca()

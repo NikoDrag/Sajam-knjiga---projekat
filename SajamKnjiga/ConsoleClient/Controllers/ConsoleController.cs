@@ -482,14 +482,20 @@ namespace ConsoleClient.Controllers
             string isbn = Console.ReadLine();
 
             Knjiga k = sajamService.KnjigaDAO.Pronadji_knjigu(isbn);
-            if (k != null)
+            if (k == null)
             {
-                sajamService.PosetilacDAO.Dodavanje_knjige_na_listu_zelja(karta, k);
+                Console.WriteLine("Knjiga nije pronadjena.");
+                return;
+            }
+
+            bool uspeh = sajamService.PosetilacDAO.Dodavanje_knjige_na_listu_zelja(karta, k);
+            if (uspeh)
+            {
                 Console.WriteLine("Knjiga dodata na listu zelja.");
             }
             else
             {
-                Console.WriteLine("Knjiga nije pronadjena.");
+                Console.WriteLine("Greska: Posetilac ne postoji ili je knjiga vec na njegovoj listi zelja.");
             }
         }
 
