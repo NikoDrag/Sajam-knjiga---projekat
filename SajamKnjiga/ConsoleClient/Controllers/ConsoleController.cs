@@ -45,6 +45,8 @@ namespace ConsoleClient.Controllers
                 Console.WriteLine("23. Brisanje izdavaca");
                 Console.WriteLine("24. Brisanje kupovine");
                 Console.WriteLine("25. Prikaz liste zelja posetioca");
+                Console.WriteLine("26. Prikaz knjiga izdavaca");
+                Console.WriteLine("27. Prikaz autora izdavaca");
                 Console.WriteLine("0. Izlaz");
                 Console.Write("Izaberite opciju: ");
 
@@ -125,6 +127,12 @@ namespace ConsoleClient.Controllers
                         break;
                     case "25":
                         PrikaziListuZelja();
+                        break;
+                    case "26":
+                        PrikaziKnjigeIzdavaca();
+                        break;
+                    case "27":
+                        PrikaziAutoreIzdavaca();
                         break;
                     case "0":
                         radi = false;
@@ -574,7 +582,6 @@ namespace ConsoleClient.Controllers
             postojeci.Prezime = CitajIzmenu(postojeci.Prezime);
             Console.WriteLine("Unesite novi datum rodjena:");
             postojeci.Datum_rodjenja = CitajIzmenu(postojeci.Datum_rodjenja);
-            Console.WriteLine("Unesite novu adresu:");
             postojeci.Adresa = IzmeniAdresu(postojeci.Adresa);
             Console.Write("Novi telefon: ");
             postojeci.Telefon = CitajIzmenu(postojeci.Telefon);
@@ -687,6 +694,79 @@ namespace ConsoleClient.Controllers
                 Console.WriteLine(poruka);
             }
         }
+
+        private void PrikaziKnjigeIzdavaca()
+        {
+            Console.Write("Sifra izdavaca: ");
+            string sifra = Console.ReadLine();
+
+            Izdavac i = sajamService.IzdavacDAO.Pronadji_izdavaca(sifra);
+            if (i == null)
+            {
+                Console.WriteLine("Izdavac nije pronadjen.");
+                return;
+            }
+
+            Console.WriteLine("\n----- KNJIGE IZDAVACA: " + i.Naziv + " (" + i.Sifra + ") ------");
+
+            if (i.Spisak_knjiga == null || i.Spisak_knjiga.Count == 0)
+            {
+                Console.WriteLine("(nema knjiga)");
+                return;
+            }
+
+            foreach (Knjiga k in i.Spisak_knjiga)
+            {
+                Console.WriteLine("   - [" + k.ISBN + "] " + k.Naziv + " (" + k.Godina_izdanja + ", " + k.Zanra + ") - " + k.Cena);
+            }
+        }
+
+        private void PrikaziAutoreIzdavaca()
+        {
+            Console.Write("Sifra izdavaca: ");
+            string sifra = Console.ReadLine();
+
+            Izdavac i = sajamService.IzdavacDAO.Pronadji_izdavaca(sifra);
+            if (i == null)
+            {
+                Console.WriteLine("Izdavac nije pronadjen.");
+                return;
+            }
+
+            Console.WriteLine("\n----- AUTORI IZDAVACA: " + i.Naziv + " (" + i.Sifra + ") -----");
+
+            // autori se izvode iz knjiga izdavaca, bez duplikata
+            List<Autor> autori = new List<Autor>();
+            if (i.Spisak_knjiga != null)
+            {
+                foreach (Knjiga k in i.Spisak_knjiga)
+                {
+                    if (k.Autori == null)
+                    {
+                        continue;
+                    }
+                    foreach (Autor a in k.Autori)
+                    {
+                        if (!autori.Contains(a))
+                        {
+                            autori.Add(a);
+                        }
+                    }
+                }
+            }
+
+            if (autori.Count == 0)
+            {
+                Console.WriteLine("   (nema autora)");
+                return;
+            }
+
+            foreach (Autor a in autori)
+            {
+                Console.WriteLine("   - " + a.Ime + " " + a.Prezime + ", " + a.Datum_rodjenja + ", " + a.Adresa + ", " + a.Telefon + ", " + a.Email);
+            }
+        }
+
 
         private void PostaviSefaIzdavaca()
         {
