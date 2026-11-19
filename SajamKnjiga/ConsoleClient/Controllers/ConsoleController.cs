@@ -49,6 +49,7 @@ namespace ConsoleClient.Controllers
                 Console.WriteLine("27. Prikaz autora izdavaca");
                 Console.WriteLine("28. Prikaz kupljenih knjiga posetioca");
                 Console.WriteLine("30. Prikaz knjiga autora");
+                Console.WriteLine("31. Uklanjanje knjige sa autora");
                 Console.WriteLine("0. Izlaz");
                 Console.Write("Izaberite opciju: ");
 
@@ -142,6 +143,9 @@ namespace ConsoleClient.Controllers
                     case "30":
                         PrikaziKnjigeAutora();
                         break;
+                    case "31":
+                        UkloniKnjiguAutoru();
+                        break;
                     case "0":
                         radi = false;
                         break;
@@ -150,6 +154,44 @@ namespace ConsoleClient.Controllers
                         break;
                 }
             }
+        }
+
+        private void UkloniKnjiguAutoru()
+        {
+            Console.Write("Broj licne karte autora: ");
+            string lk = Console.ReadLine();
+
+            Autor a = sajamService.AutorDAO.Pronadji_autora(lk);
+            if (a == null)
+            {
+                Console.WriteLine("Autor nije pronadjen.");
+                return;
+            }
+
+            Console.Write("ISBN knjige: ");
+            string isbn = Console.ReadLine();
+
+            bool imaKnjigu = false;
+            if (a.Knjige != null)
+            {
+                foreach (Knjiga k in a.Knjige)
+                {
+                    if (k.ISBN == isbn)
+                    {
+                        imaKnjigu = true;
+                        break;
+                    }
+                }
+            }
+
+            if (!imaKnjigu)
+            {
+                Console.WriteLine("Autor nema knjigu sa tim ISBN-om na spisku.");
+                return;
+            }
+
+            sajamService.AutorDAO.Uklanjanje_knjige_sa_autora(lk, isbn);
+            Console.WriteLine("Knjiga uspesno uklonjena sa autora.");
         }
 
         private void PrikaziKnjigeAutora()

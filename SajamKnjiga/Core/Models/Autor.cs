@@ -38,23 +38,8 @@ namespace Core.Models
 
         public override string ToString()
         {
-            string knjigeTekst = "nema";
-            if (Knjige != null && Knjige.Count > 0)
-            {
-                List<string> nazivi = new List<string>();
-                foreach (Knjiga k in Knjige)
-                {
-                    if (!string.IsNullOrEmpty(k.Naziv))
-                        nazivi.Add(k.Naziv + " (" + k.ISBN + ")");
-                    else
-                        nazivi.Add(k.ISBN);
-                }
-                knjigeTekst = string.Join("; ", nazivi);
-            }
-
             return Ime + ", " + Prezime + ", " + Datum_rodjenja + ", " + Adresa + ", " +
-                   Telefon + ", " + Email + ", " + Broj_licne_karte + ", " + Godine_iskustva +
-                   " | Knjige: [" + knjigeTekst + "]";
+                   Telefon + ", " + Email + ", " + Broj_licne_karte + ", " + Godine_iskustva;
         }
     }
 }
