@@ -47,7 +47,7 @@ namespace ConsoleClient.Controllers
                 Console.WriteLine("25. Prikaz liste zelja posetioca");
                 Console.WriteLine("26. Prikaz knjiga izdavaca");
                 Console.WriteLine("27. Prikaz autora izdavaca");
-                Console.WriteLine("28. Prikaz kupovina posetioca");
+                Console.WriteLine("28. Prikaz kupljenih knjiga posetioca");
                 Console.WriteLine("0. Izlaz");
                 Console.Write("Izaberite opciju: ");
 
@@ -135,8 +135,6 @@ namespace ConsoleClient.Controllers
                     case "27":
                         PrikaziAutoreIzdavaca();
                         break;
-                    
-                        break;
                     case "0":
                         radi = false;
                         break;
@@ -161,8 +159,34 @@ namespace ConsoleClient.Controllers
         }
 
 
+        private void PrikaziKupljeneKnjigePosetioca()
+        {
+            Console.Write("Broj clanske karte posetioca: ");
+            string karta = Console.ReadLine();
 
-        
+            Posetilac p = sajamService.PosetilacDAO.Pronadji_posetioca(karta);
+            if (p == null)
+            {
+                Console.WriteLine("Posetilac nije pronadjen.");
+                return;
+            }
+
+            Console.WriteLine($"\n----- KUPLJENE KNJIGE POSETIOCA: {p.Ime} {p.Prezime} ({p.Broj_clanske_karte}) -----");
+            if (p.Spisak_kupljenih_knjiga == null || p.Spisak_kupljenih_knjiga.Count == 0)
+            {
+                Console.WriteLine("(nema knjiga)");
+                return;
+            }
+
+            foreach (Kupovina kup in p.Spisak_kupljenih_knjiga)
+            {
+                if (kup.Knjiga != null)
+                {
+                    Console.WriteLine($"{kup.Knjiga.Naziv} ({kup.Knjiga.ISBN}) | Datum: {kup.Datum_kupovine} | Ocena: {kup.Ocena} | Komentar: {kup.Komentar}");
+                }
+            }
+        }
+
         private string CitajIzmenu(string trenutno)
         {
             string unos = Console.ReadLine();
