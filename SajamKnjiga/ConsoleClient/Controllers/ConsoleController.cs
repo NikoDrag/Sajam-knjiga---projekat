@@ -44,6 +44,7 @@ namespace ConsoleClient.Controllers
                 Console.WriteLine("22. Brisanje autora");
                 Console.WriteLine("23. Brisanje izdavaca");
                 Console.WriteLine("24. Brisanje kupovine");
+                Console.WriteLine("25. Prikaz liste zelja posetioca");
                 Console.WriteLine("0. Izlaz");
                 Console.Write("Izaberite opciju: ");
 
@@ -121,6 +122,9 @@ namespace ConsoleClient.Controllers
                         break;
                     case "24":
                         ObrisiKupovinu();
+                        break;
+                    case "25":
+                        PrikaziListuZelja();
                         break;
                     case "0":
                         radi = false;
