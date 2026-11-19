@@ -135,9 +135,6 @@ namespace ConsoleClient.Controllers
                     case "27":
                         PrikaziAutoreIzdavaca();
                         break;
-                    case "28":
-                        PrikaziKupljeneKnjigePosetioca();
-                        break;
                     case "0":
                         radi = false;
                         break;
@@ -879,5 +876,8 @@ namespace ConsoleClient.Controllers
             string datum = Console.ReadLine();
             Console.WriteLine(sajamService.Obrisi_kupovinu(karta, isbn, datum) ? "Kupovina obrisana." : "Kupovina nije pronadjena.");
         }
+
+      
+          
     }
 }
